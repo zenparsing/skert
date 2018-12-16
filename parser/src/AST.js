@@ -87,6 +87,13 @@ export function Script(statements) {
   this.statements = statements;
 }
 
+export function SymbolName(value) {
+  this.type = 'SymbolName';
+  this.start = -1;
+  this.end = -1;
+  this.value = value;
+}
+
 export function Module(statements) {
   this.type = 'Module';
   this.start = -1;

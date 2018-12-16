@@ -791,7 +791,9 @@ export class Parser {
       switch (token.type) {
         case '.': {
           this.read();
-          let prop = this.IdentifierName();
+          let prop = this.peek() === 'SYMBOL' ?
+            this.SymbolName() :
+            this.IdentifierName();
           expr = this.node(new AST.MemberExpression(expr, prop), start);
           break;
         }
@@ -999,6 +1001,9 @@ export class Parser {
 
         return this.Identifier(true);
 
+      case 'SYMBOL':
+        return this.SymbolName();
+
       case 'REGEX':
         return this.RegularExpression();
 
@@ -1035,6 +1040,11 @@ export class Parser {
   IdentifierName() {
     let token = this.readToken('IDENTIFIER', 'name');
     return this.node(new AST.Identifier(token.value, ''), token.start, token.end);
+  }
+
+  SymbolName() {
+    let token = this.readToken('SYMBOL');
+    return this.node(new AST.SymbolName(token.value), token.start, token.end);
   }
 
   StringLiteral() {
@@ -1238,6 +1248,8 @@ export class Parser {
         return this.StringLiteral();
       case 'NUMBER':
         return this.NumberLiteral();
+      case 'SYMBOL':
+        return this.SymbolName();
       case '[':
         return this.ComputedPropertyName();
     }

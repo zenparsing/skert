@@ -60,6 +60,7 @@ function makeCharTable() {
   add('zero', '0');
   add('string', '"\'');
   add('template', '`');
+  add('symbol', '@');
   add('identifier', '$_\\');
 
   return table;
@@ -482,6 +483,9 @@ export class Scanner {
         else if (next === 42) return this.BlockComment(); // *
         else if (context === 'div') return this.Punctuator();
         else return this.RegularExpression();
+
+      case 'symbol':
+        return this.Symbol();
     }
 
     // Unicode newlines
@@ -886,6 +890,12 @@ export class Scanner {
       return esc ? this.Error() : val;
 
     return 'IDENTIFIER';
+  }
+
+  Symbol() {
+    this.offset++;
+    this.Identifier('', 0);
+    return 'SYMBOL';
   }
 
   LineComment() {
