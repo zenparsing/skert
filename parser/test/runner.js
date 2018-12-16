@@ -98,7 +98,7 @@ function isObject(obj) {
 }
 
 // Returns true if the specified object is 'like' another object
-function objectLike(a, b, skipKeys) {
+export function objectLike(a, b, skipKeys) {
   if (a === b)
     return true;
 
@@ -129,7 +129,7 @@ function defaultRender(obj) {
   return inspect(obj, { depth: 20, colors: true });
 }
 
-function runTests(options) {
+export function runTests(options) {
   let testsPassed = 0;
   let testsFailed = 0;
   let dirname = options.dir;
@@ -217,6 +217,3 @@ function runTests(options) {
     console.log('');
   }
 }
-
-exports.objectLike = objectLike;
-exports.runTests = runTests;

@@ -1,5 +1,5 @@
-const { parse, print } = require('../../src');
-const { runTests } = require('../runner.js');
+import { parse, print } from '../../src';
+import { runTests } from '../runner.js';
 
 function process(source, options) {
   return print(parse(source, options).ast).output;

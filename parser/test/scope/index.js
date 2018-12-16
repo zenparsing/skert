@@ -41,8 +41,8 @@
 
 */
 
-const { parse, resolveScopes } = require('../../src');
-const { runTests, objectLike } = require('../runner.js');
+import { parse, resolveScopes } from '../../src';
+import { runTests, objectLike } from '../runner.js';
 
 function process(source, options) {
   let result = parse(source, options);

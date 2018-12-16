@@ -1,3 +1,3 @@
-require('./parse/index.js');
-require('./scope/index.js');
-require('./print/index.js');
+import './parse/index.js';
+import './scope/index.js';
+import './print/index.js';

@@ -1,5 +1,5 @@
-const { parse } = require('../../src');
-const { runTests, objectLike } = require('../runner.js');
+import { parse } from '../../src';
+import { runTests, objectLike } from '../runner.js';
 
 const SKIP_KEYS = [
   'start',

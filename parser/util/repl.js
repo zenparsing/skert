@@ -1,7 +1,36 @@
-const path = require('path');
-const childProcess = require('child_process');
+const load = require('esm')(module);
+const esparse = load('../src');
+const util = load('util');
 
-childProcess.spawn('node', ['-r', 'annotated', '-r', path.resolve(__dirname, './repl-init')], {
-  stdio: 'inherit',
-  env: process.env,
+const HELP = `
+== Global Variables ==
+
+ast  (template tag) : Prints a script AST
+astm (template tag) : Prints a module AST
+esparse             : The full library API
+parse               : Parses JS and returns a ParseResult
+`;
+
+global.esparse = esparse;
+
+global.parse = esparse.parse;
+
+function printAST(input, options) {
+  let result = esparse.parse(input, options);
+  console.log(util.inspect(result.ast, {
+    colors: true,
+    depth: 50,
+  }));
+}
+
+Object.defineProperty(global, 'help', {
+  get() { console.log(HELP) }
 });
+
+global.ast = function(strings, ...values) {
+  printAST(String.raw(strings, ...values));
+};
+
+global.astm = function(strings, ...values) {
+  printAST(String.raw(strings, ...values), { module: true });
+};
