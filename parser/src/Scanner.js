@@ -52,7 +52,7 @@ function makeCharTable() {
   add('whitespace', '\t\v\f ');
   add('newline', '\r\n');
   add('decimal-digit', '123456789');
-  add('punctuator-char', '{[]();,?@');
+  add('punctuator-char', '{[]();,?');
   add('punctuator', '<>+-*%&|^!~=:');
   add('dot', '.');
   add('slash', '/');
@@ -149,7 +149,7 @@ export class Scanner {
   }
 
   next(context) {
-    if (this.type !== 'COMMENT' && this.type !== '@')
+    if (this.type !== 'COMMENT')
       this.newlineBefore = false;
 
     this.strictError = '';

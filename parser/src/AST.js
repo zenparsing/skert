@@ -680,14 +680,6 @@ export function ExportSpecifier(local, exported) {
   this.exported = exported;
 }
 
-export function Annotation(path, args) {
-  this.type = 'Annotation';
-  this.start = -1;
-  this.end = -1;
-  this.path = path;
-  this.arguments = args;
-}
-
 export function Comment(text) {
   this.type = 'Comment';
   this.start = -1;

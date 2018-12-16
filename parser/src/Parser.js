@@ -170,7 +170,6 @@ class ParseResult {
     this.input = results.input;
     this.lineMap = results.lineMap;
     this.ast = results.ast;
-    this.annotations = results.annotations;
     this.comments = results.comments;
   }
 
@@ -195,7 +194,6 @@ export class Parser {
     this.tokenStash = new Scanner();
     this.tokenEnd = scanner.offset;
     this.context = new Context(null);
-    this.annotations = [];
     this.comments = [];
   }
 
@@ -204,7 +202,6 @@ export class Parser {
       ast,
       input: this.input,
       lineMap: this.scanner.lineMap,
-      annotations: this.annotations,
       comments: this.comments,
     });
   }
@@ -215,11 +212,6 @@ export class Parser {
 
   parseScript() {
     return this.createParseResult(this.Script());
-  }
-
-  parseAnnotations(context) {
-    while (this.peek(context) === '@')
-      this.annotations.push(this.Annotation());
   }
 
   nextToken(context) {
@@ -1175,7 +1167,6 @@ export class Parser {
         comma = true;
       } else {
         comma = false;
-        this.parseAnnotations('name');
         list.push(node = this.PropertyDefinition());
       }
     }
@@ -1836,8 +1827,6 @@ export class Parser {
 
     // TODO: is this wrong for braceless statement lists?
     while (this.peekUntil('}')) {
-      this.parseAnnotations();
-
       node = this.StatementListItem();
 
       // Check for directives
@@ -2174,8 +2163,6 @@ export class Parser {
     this.read('{');
 
     while (this.peekUntil('}', 'name')) {
-      this.parseAnnotations();
-
       let elem = this.ClassElement(classKind);
 
       switch (elem.type) {
@@ -2273,7 +2260,6 @@ export class Parser {
     let list = [];
 
     while (this.peekUntil('EOF')) {
-      this.parseAnnotations();
       switch (this.peek()) {
         case 'import':
           switch (this.peekAt('', 1)) {
@@ -2569,29 +2555,6 @@ export class Parser {
     }
 
     return this.node(new AST.ExportSpecifier(local, remote), start);
-  }
-
-  Annotation() {
-    let start = this.nodeStart();
-
-    this.read('@');
-
-    let path = [this.IdentifierName()];
-
-    while (this.peek() === '.') {
-      this.read();
-      path.push(this.IdentifierName());
-    }
-
-    let args = null;
-
-    if (this.peek() === '(') {
-      this.read();
-      args = this.ArgumentList();
-      this.read(')');
-    }
-
-    return this.node(new AST.Annotation(path, args), start);
   }
 
 }
