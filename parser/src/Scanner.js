@@ -893,7 +893,6 @@ export class Scanner {
   }
 
   Symbol() {
-    this.offset++;
     this.Identifier('', 0);
     return 'SYMBOL';
   }

@@ -66,7 +66,11 @@ export class Printer {
   printNode(node) {
     if (node !== null && node !== undefined) {
       this.addMapping(node);
-      this[node.type](node);
+      let method = this[node.type];
+      if (!method) {
+        throw new Error(`Missing method for ${ node.type }`);
+      }
+      method.call(this, node);
     }
   }
 

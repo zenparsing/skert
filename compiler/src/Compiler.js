@@ -1,7 +1,8 @@
 import { parse, print, AST } from './Parser.js';
 import { Path } from './Path.js';
 import { generateSourceMap, encodeInlineSourceMap } from './SourceMap.js';
-import * as ModuleTransform from './ModuleTransform.js';
+import * as ModuleTransform from './transforms/ModuleTransform.js';
+import * as SymbolNameTransform from './transforms/SymbolNameTransform.js';
 import * as Templates from './Templates.js';
 
 function basename(file) {
@@ -12,7 +13,7 @@ export function compile(source, options = {}) {
   let parseResult = parse(source, { module: options.module, resolveScopes: true });
   let rootPath = Path.fromParseResult(parseResult);
 
-  let transforms = [];
+  let transforms = [SymbolNameTransform];
   if (options.transformModules) {
     transforms.push(ModuleTransform);
   }
