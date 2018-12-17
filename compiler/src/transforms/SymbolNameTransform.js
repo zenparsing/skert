@@ -5,12 +5,27 @@ export function register({ define, templates, AST }) {
       this.names = new Map();
     }
 
+    replaceRef(path, name) {
+      path.replaceNode(new AST.ComputedPropertyName(
+        new AST.Identifier(name)
+      ));
+    }
+
+    replacePrimary(path, name) {
+      path.replaceNode(new AST.MemberExpression(
+        new AST.ThisExpression(),
+        new AST.ComputedPropertyName(
+          new AST.Identifier(name)
+        )
+      ));
+    }
+
     getIdentifierName(value) {
       if (this.names.has(value)) {
         return this.names.get(value);
       }
 
-      let name = rootPath.uniqueIdentifier(value.slice(1), {
+      let name = rootPath.uniqueIdentifier('$' + value.slice(1), {
         kind: 'const',
         initializer: new AST.CallExpression(
           new AST.Identifier('Symbol'),
@@ -25,21 +40,20 @@ export function register({ define, templates, AST }) {
     SymbolName(path) {
       let name = this.getIdentifierName(path.node.value);
       switch (path.parent.node.type) {
-        case 'MemberExpression':
         case 'PropertyDefinition':
         case 'MethodDefinition':
         case 'ClassField':
-          path.replaceNode(new AST.ComputedPropertyName(
-            new AST.Identifier(name)
-          ));
+          this.replaceRef(path, name);
+          break;
+        case 'MemberExpression':
+          if (path.parent.node.object === path.node) {
+            this.replacePrimary(path, name);
+          } else {
+            this.replaceRef(path, name);
+          }
           break;
         default:
-          path.replaceNode(new AST.MemberExpression(
-            new AST.ThisExpression(),
-            new AST.ComputedPropertyName(
-              new AST.Identifier(name)
-            )
-          ));
+          this.replacePrimary(path, name);
           break;
       }
     }
