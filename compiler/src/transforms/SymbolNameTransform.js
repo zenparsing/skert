@@ -2,16 +2,16 @@ export function register({ define, templates, AST }) {
   define(rootPath => rootPath.visit(new class SymbolNameVisitor {
 
     constructor() {
-      this.names = new Map();
+      @names = new Map();
     }
 
-    replaceRef(path, name) {
+    @replaceRef(path, name) {
       path.replaceNode(new AST.ComputedPropertyName(
         new AST.Identifier(name)
       ));
     }
 
-    replacePrimary(path, name) {
+    @replacePrimary(path, name) {
       path.replaceNode(new AST.MemberExpression(
         new AST.ThisExpression(),
         new AST.ComputedPropertyName(
@@ -21,8 +21,8 @@ export function register({ define, templates, AST }) {
     }
 
     getIdentifierName(value) {
-      if (this.names.has(value)) {
-        return this.names.get(value);
+      if (@names.has(value)) {
+        return @names.get(value);
       }
 
       let name = rootPath.uniqueIdentifier('$' + value.slice(1), {
@@ -33,7 +33,7 @@ export function register({ define, templates, AST }) {
         ),
       });
 
-      this.names.set(value, name);
+      @names.set(value, name);
       return name;
     }
 
@@ -43,17 +43,17 @@ export function register({ define, templates, AST }) {
         case 'PropertyDefinition':
         case 'MethodDefinition':
         case 'ClassField':
-          this.replaceRef(path, name);
+          @replaceRef(path, name);
           break;
         case 'MemberExpression':
           if (path.parent.node.object === path.node) {
-            this.replacePrimary(path, name);
+            @replacePrimary(path, name);
           } else {
-            this.replaceRef(path, name);
+            @replaceRef(path, name);
           }
           break;
         default:
-          this.replacePrimary(path, name);
+          @replacePrimary(path, name);
           break;
       }
     }

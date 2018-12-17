@@ -1,41 +1,35 @@
 import { AST, resolveScopes } from './Parser.js';
 
-const Node = Symbol();
-const Location = Symbol();
-const Parent = Symbol();
-const ScopeInfo = Symbol();
-const ChangeList = Symbol();
-
 export class Path {
 
   constructor(node, parent = null, location = null) {
-    this[Node] = node;
-    this[Location] = location;
-    this[Parent] = parent;
-    this[ScopeInfo] = parent ? parent[ScopeInfo] : null;
-    this[ChangeList] = [];
+    @node = node;
+    @location = location;
+    @parent = parent;
+    @scopeInfo = parent ? parent.@scopeInfo : null;
+    @changeList = [];
   }
 
   get node() {
-    return this[Node];
+    return @node;
   }
 
   get parent() {
-    return this[Parent];
+    return @parent;
   }
 
   get parentNode() {
-    return this[Parent] ? this[Parent][Node] : null;
+    return @parent ? @parent.@node : null;
   }
 
   forEachChild(fn) {
-    if (!this[Node]) {
+    if (!@node) {
       return;
     }
 
     let paths = [];
 
-    AST.forEachChild(this[Node], (child, key, index) => {
+    AST.forEachChild(@node, (child, key, index) => {
       let path = new Path(child, this, { key, index });
       paths.push(path);
       fn(path);
@@ -47,11 +41,11 @@ export class Path {
   }
 
   applyChanges() {
-    let list = this[ChangeList];
-    this[ChangeList] = [];
+    let list = @changeList;
+    @changeList = [];
 
     for (let record of list) {
-      if (!this[Node]) {
+      if (!@node) {
         break;
       }
       record.apply();
@@ -59,19 +53,19 @@ export class Path {
   }
 
   removeNode() {
-    this[ChangeList].push(new ChangeRecord(this, 'replaceNode', [null]));
+    @changeList.push(new ChangeRecord(this, 'replaceNode', [null]));
   }
 
   replaceNode(newNode) {
-    this[ChangeList].push(new ChangeRecord(this, 'replaceNode', [newNode]));
+    @changeList.push(new ChangeRecord(this, 'replaceNode', [newNode]));
   }
 
   insertNodesBefore(...nodes) {
-    this[ChangeList].push(new ChangeRecord(this, 'insertNodesBefore', nodes));
+    @changeList.push(new ChangeRecord(this, 'insertNodesBefore', nodes));
   }
 
   insertNodesAfter(...nodes) {
-    this[ChangeList].push(new ChangeRecord(this, 'insertNodesAfter', nodes));
+    @changeList.push(new ChangeRecord(this, 'insertNodesAfter', nodes));
   }
 
   visitChildren(visitor) {
@@ -80,16 +74,16 @@ export class Path {
 
   visit(visitor) {
     // TODO: applyChanges will not be run if called from top-level. Is this a problem?
-    if (!this[Node]) {
+    if (!@node) {
       return;
     }
 
-    let method = visitor[this[Node].type];
+    let method = visitor[@node.type];
     if (typeof method === 'function') {
       method.call(visitor, this);
     }
 
-    if (!this[Node]) {
+    if (!@node) {
       return;
     }
 
@@ -104,7 +98,7 @@ export class Path {
   }
 
   uniqueIdentifier(baseName, options = {}) {
-    let scopeInfo = this[ScopeInfo];
+    let scopeInfo = @scopeInfo;
     let ident = null;
 
     for (let i = 0; true; ++i) {
@@ -119,7 +113,7 @@ export class Path {
     scopeInfo.names.add(ident);
 
     if (options.kind) {
-      this[ChangeList].push(new ChangeRecord(this, 'insertDeclaration', [ident, options]));
+      @changeList.push(new ChangeRecord(this, 'insertDeclaration', [ident, options]));
     }
 
     return ident;
@@ -127,8 +121,38 @@ export class Path {
 
   static fromParseResult(result) {
     let path = new Path(result.ast);
-    path[ScopeInfo] = getScopeInfo(result);
+    path.@scopeInfo = getScopeInfo(result);
     return path;
+  }
+
+  @getLocation(fn) {
+    if (!@parent) {
+      throw new Error('Node does not have a parent');
+    }
+
+    let { key, index } = @location;
+    let node = @node;
+    let parent = @parent.@node;
+
+    let valid = typeof index === 'number' ?
+      parent[key][index] === node :
+      parent[key] === node;
+
+    if (!valid) {
+      AST.forEachChild(parent, (child, k, i, stop) => {
+        if (child === node) {
+          valid = true;
+          @location = { key: (key = k), index: (index = i) };
+          return stop;
+        }
+      });
+    }
+
+    if (!valid) {
+      throw new Error('Unable to determine node location');
+    }
+
+    fn(parent, key, index);
   }
 
 }
@@ -136,24 +160,24 @@ export class Path {
 class ChangeRecord {
 
   constructor(path, name, args) {
-    this.path = path;
-    this.name = name;
-    this.args = args;
+    @path = path;
+    @name = name;
+    @args = args;
   }
 
   apply() {
-    switch (this.name) {
-      case 'replaceNode': return this.replaceNode(this.args[0]);
-      case 'insertNodesAfter': return this.insertNodesAfter(this.args);
-      case 'insertNodesBefore': return this.insertNodesBefore(this.args);
-      case 'insertDeclaration': return this.insertDeclaration(...this.args);
+    switch (@name) {
+      case 'replaceNode': return @replaceNode(@args[0]);
+      case 'insertNodesAfter': return @insertNodesAfter(@args);
+      case 'insertNodesBefore': return @insertNodesBefore(@args);
+      case 'insertDeclaration': return @insertDeclaration(...@args);
       default: throw new Error('Invalid change record type');
     }
   }
 
-  replaceNode(newNode) {
-    if (this.path[Parent]) {
-      getLocation(this.path, (parent, key, index) => {
+  @replaceNode(newNode) {
+    if (@path.@parent) {
+      @path.@getLocation((parent, key, index) => {
         if (typeof index !== 'number') {
           parent[key] = newNode;
         } else if (newNode) {
@@ -164,11 +188,11 @@ class ChangeRecord {
       });
     }
 
-    this.path[Node] = newNode;
+    @path.@node = newNode;
   }
 
-  insertNodesAfter(nodes) {
-    getLocation(this.path, (parent, key, index) => {
+  @insertNodesAfter(nodes) {
+    @path.@getLocation((parent, key, index) => {
       if (typeof index !== 'number') {
         throw new Error('Node is not contained within a node list');
       }
@@ -176,8 +200,8 @@ class ChangeRecord {
     });
   }
 
-  insertNodesBefore(nodes) {
-    getLocation(this.path, (parent, key, index) => {
+  @insertNodesBefore(nodes) {
+    @path.@getLocation((parent, key, index) => {
       if (typeof index !== 'number') {
         throw new Error('Node is not contained within a node list');
       }
@@ -185,8 +209,8 @@ class ChangeRecord {
     });
   }
 
-  insertDeclaration(ident, options) {
-    let { statements } = getBlock(this.path).node;
+  @insertDeclaration(ident, options) {
+    let { statements } = getBlock(@path).node;
     let i = 0;
 
     while (i < statements.length) {
@@ -205,36 +229,6 @@ class ChangeRecord {
     });
   }
 
-}
-
-function getLocation(path, fn) {
-  if (!path[Parent]) {
-    throw new Error('Node does not have a parent');
-  }
-
-  let { key, index } = path[Location];
-  let node = path[Node];
-  let parent = path[Parent][Node];
-
-  let valid = typeof index === 'number' ?
-    parent[key][index] === node :
-    parent[key] === node;
-
-  if (!valid) {
-    AST.forEachChild(parent, (child, k, i, stop) => {
-      if (child === node) {
-        valid = true;
-        path[Location] = { key: (key = k), index: (index = i) };
-        return stop;
-      }
-    });
-  }
-
-  if (!valid) {
-    throw new Error('Unable to determine node location');
-  }
-
-  fn(parent, key, index);
 }
 
 function getScopeInfo(parseResult) {
