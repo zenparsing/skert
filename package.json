@@ -5,6 +5,8 @@
   "homepage": "https://github.com/zenparsing/skreet",
   "dependencies": {},
   "devDependencies": {
-    "esm": "^3.0.84"
+    "esm": "^3.0.84",
+    "rollup": "^0.68.0",
+    "rollup-plugin-node-resolve": "^4.0.0"
   }
 }
