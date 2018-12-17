@@ -4,9 +4,6 @@ import * as path from 'path';
 let translate = null;
 
 const translationMappings = new Map();
-const $nodeModulePaths = '_nodeModulePaths';
-const $resolveFilename = '_resolveFilename';
-const $compile = '_compile';
 
 export class ModuleLoader {
 
@@ -16,12 +13,12 @@ export class ModuleLoader {
     }
     this._module = new Module(location, null);
     this._module.filename = location;
-    this._module.paths = Module[$nodeModulePaths](path.dirname(location));
+    this._module.paths = Module._nodeModulePaths(path.dirname(location));
     this._location = location;
   }
 
   resolve(specifier) {
-    return Module[$resolveFilename](specifier, this._module, false, {});
+    return Module._resolveFilename(specifier, this._module, false, {});
   }
 
   load(specifier) {
@@ -55,17 +52,17 @@ function startModuleTranslation() {
   originals = {
     refCount: 1,
     prepareStackTrace: Error.prepareStackTrace,
-    compile: Module.prototype[$compile],
+    compile: Module.prototype._compile,
   };
 
-  Module.prototype[$compile] = compileOverride;
+  Module.prototype._compile = compileOverride;
   Error.prepareStackTrace = prepareStackTraceOverride;
 }
 
 function endModuleTranslation() {
   originals.refCount -= 1;
   if (originals.refCount === 0) {
-    Module.prototype[$compile] = originals.compile;
+    Module.prototype._compile = originals.compile;
     Error.prepareStackTrace = originals.prepareStackTrace;
     originals = null;
   }

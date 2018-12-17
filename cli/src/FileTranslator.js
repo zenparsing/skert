@@ -1,5 +1,4 @@
 import { compile } from './Compiler.js';
-import { encodeSourceMapLink } from './SourceMap.js';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -78,6 +77,7 @@ export async function translateFileToString(inPath, options = {}) {
   inPath = path.resolve(inPath);
   let source = await readInput(inPath);
   let result = compile(source, {
+    module: options.module,
     location: inPath,
     transformModules: options.transformModules,
     sourceMap: options.sourceMap,
@@ -99,6 +99,7 @@ export async function translateFile(inPath, outPath, options = {}) {
 
   let source = await readInput(inPath);
   let result = compile(source, {
+    module: options.module,
     location: inPath,
     transformModules: options.transformModules,
     sourceMap: options.sourceMap,
@@ -106,7 +107,6 @@ export async function translateFile(inPath, outPath, options = {}) {
 
   if (result.sourceMap) {
     await writeOutput(outPath + '.map', JSON.stringify(result.sourceMap));
-    result.output += encodeSourceMapLink(`${ path.basename(outPath) }.map`);
   }
 
   await writeOutput(outPath, result.output);

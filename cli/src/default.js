@@ -1,2 +1,2 @@
-export * from './Compiler.js';
+export { main } from './Main.js';
 export * from './FileTranslator.js';

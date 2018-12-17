@@ -1,1 +1,1 @@
-export * from '../../parser/src/index.js';
+export * from '../../parser/src/default.js';

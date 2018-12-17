@@ -791,7 +791,7 @@ export class Parser {
       switch (token.type) {
         case '.': {
           this.read();
-          let prop = this.peek() === 'SYMBOL' ?
+          let prop = this.peek('name') === 'SYMBOL' ?
             this.SymbolName() :
             this.IdentifierName();
           expr = this.node(new AST.MemberExpression(expr, prop), start);

@@ -1,6 +1,6 @@
 import { parse, print, AST } from './Parser.js';
 import { Path } from './Path.js';
-import { generateSourceMap, encodeInlineSourceMap } from './SourceMap.js';
+import { generateSourceMap, encodeInlineSourceMap, encodeSourceMapLink } from './SourceMap.js';
 import * as ModuleTransform from './transforms/ModuleTransform.js';
 import * as SymbolNameTransform from './transforms/SymbolNameTransform.js';
 import * as Templates from './Templates.js';
@@ -23,9 +23,10 @@ export function compile(source, options = {}) {
   let result = print(rootPath.node, { lineMap: parseResult.lineMap });
 
   if (options.sourceMap) {
+    let filename = basename(options.location);
     let map = generateSourceMap(result.mappings, {
       sources: [{
-        file: basename(options.location),
+        file: filename,
         content: source,
         default: true,
       }],
@@ -34,6 +35,7 @@ export function compile(source, options = {}) {
     if (options.sourceMap === 'inline') {
       result.output += encodeInlineSourceMap(map);
     } else {
+      result.output += encodeSourceMapLink(`${ filename }.map`);
       result.sourceMap = map;
     }
   }
