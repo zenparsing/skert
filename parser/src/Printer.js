@@ -438,7 +438,11 @@ export class Printer {
   }
 
   ReturnStatement(node) {
-    this.write('return ', node.argument, ';');
+    if (node.argument) {
+      this.write('return ', node.argument, ';');
+    } else {
+      this.write('return;');
+    }
   }
 
   BreakStatement(node) {

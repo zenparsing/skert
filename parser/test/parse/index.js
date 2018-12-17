@@ -1,22 +1,15 @@
-import { parse } from '../../src';
-import { runTests, objectLike } from '../runner.js';
-
-const SKIP_KEYS = [
-  'start',
-  'end',
-  'message',
-  'context',
-  'error',
-  'suffix',
-];
-
-// Returns true if the specified AST is 'like' another AST
-function astLike(a, b) {
-  return objectLike(a, b, SKIP_KEYS);
-}
+import { parse } from '../../src/default.js';
+import { runTests } from '../runner.js';
 
 runTests({
   dir:  __dirname,
   process: (input, options) => parse(input, options).ast,
-  compare: astLike
+  ignoreKeys: [
+    'start',
+    'end',
+    'message',
+    'context',
+    'error',
+    'suffix',
+  ],
 });

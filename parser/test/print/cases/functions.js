@@ -27,4 +27,10 @@
 
 function f() {}`,
 
+/** function f() { return } **/
+'empty return':
+`function f() {
+  return;
+}`,
+
 })

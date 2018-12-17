@@ -1,4 +1,4 @@
-import { parse, print } from '../../src';
+import { parse, print } from '../../src/default.js';
 import { runTests } from '../runner.js';
 
 function process(source, options) {

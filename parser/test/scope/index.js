@@ -41,8 +41,8 @@
 
 */
 
-import { parse, resolveScopes } from '../../src';
-import { runTests, objectLike } from '../runner.js';
+import { parse, resolveScopes } from '../../src/default.js';
+import { runTests } from '../runner.js';
 
 function process(source, options) {
   let result = parse(source, options);
@@ -75,12 +75,8 @@ function cleanResult(x) {
   return x;
 }
 
-function compare(a, b) {
-  return objectLike(a, b, ['node', 'message', 'parent', 'start', 'end']);
-}
-
 runTests({
   dir:  __dirname,
   process,
-  compare,
+  ignoreKeys: ['node', 'message', 'parent', 'start', 'end'],
 });

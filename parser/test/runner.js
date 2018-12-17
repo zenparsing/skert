@@ -98,7 +98,7 @@ function isObject(obj) {
 }
 
 // Returns true if the specified object is 'like' another object
-export function objectLike(a, b, skipKeys) {
+export function objectsMatch(a, b, skipKeys) {
   if (a === b)
     return true;
 
@@ -113,20 +113,50 @@ export function objectLike(a, b, skipKeys) {
   for (let keys = Object.keys(a), i = 0; i < keys.length; ++i) {
     // Control must have same own property
     if (!HOP.call(b, keys[i])) {
-      if (skipKeys && skipKeys.indexOf(keys[i]) >= 0) continue;
+      if (skipKeys && skipKeys.includes(keys[i])) continue;
       else return false;
     }
 
     // Values of own properties must be equal
-    if (!objectLike(a[keys[i]], b[keys[i]], skipKeys))
+    if (!objectsMatch(a[keys[i]], b[keys[i]], skipKeys))
       return false;
   }
 
   return true;
 }
 
-function defaultRender(obj) {
-  return inspect(obj, { depth: 20, colors: true });
+function renderTree(obj, skipKeys) {
+  function clone(obj) {
+    if (!obj || typeof obj !== 'object') {
+      return obj;
+    }
+
+    if (Array.isArray(obj)) {
+      let c = [];
+      for (let item of obj) {
+        c.push(clone(item));
+      }
+      return c;
+    }
+
+    let c = {};
+
+    for (let key in obj) {
+      if (skipKeys && skipKeys.includes(key)) {
+        continue;
+      } else {
+        c[key] = clone(obj[key]);
+      }
+    }
+
+    return c;
+  }
+
+  let out = inspect(clone(obj), { depth: 10 });
+
+  FS.writeFileSync(Path.resolve(__dirname, '_fail.js'), out, {
+    encoding: 'utf8',
+  });
 }
 
 export function runTests(options) {
@@ -134,8 +164,11 @@ export function runTests(options) {
   let testsFailed = 0;
   let dirname = options.dir;
   let process = options.process;
-  let compare = options.compare;
-  let render = options.render || defaultRender;
+  let compare = options.compare || defaultCompare;
+
+  function defaultCompare(a, b) {
+    return objectsMatch(a, b, options.ignoreKeys);
+  }
 
   function printResult(msg, pass) {
     console.log(msg + ' ' + (pass ? Style.green('OK') : Style.bold(Style.red('FAIL'))));
@@ -154,6 +187,10 @@ export function runTests(options) {
   }
 
   function run() {
+    try {
+      FS.unlinkSync(Path.resolve(__dirname, '_fail.js'));
+    } catch (e) {}
+
     let currentGroup = null;
 
     printMessage('\nStarting tests...');
@@ -194,8 +231,7 @@ export function runTests(options) {
         printResult(name + ' - ' + keys[i], pass);
 
         if (!pass) {
-          printMessage('\nGenerated tree:\n');
-          console.log(render(tree));
+          renderTree(tree, options.ignoreKeys);
           throw 'stop';
         }
       }
