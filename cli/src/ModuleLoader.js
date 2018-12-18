@@ -1,44 +1,39 @@
 import Module from 'module';
 import * as path from 'path';
-
-let translate = null;
+import { compile } from './Compiler.js';
 
 const translationMappings = new Map();
 
-export class ModuleLoader {
+class ModuleLoader {
 
   constructor(location) {
     if (!location) {
       location = path.join(process.cwd(), 'module-loader');
     }
-    this._module = new Module(location, null);
-    this._module.filename = location;
-    this._module.paths = Module._nodeModulePaths(path.dirname(location));
-    this._location = location;
+    @module = new Module(location, null);
+    @module.filename = location;
+    @module.paths = Module._nodeModulePaths(path.dirname(location));
+    @location = location;
   }
 
   resolve(specifier) {
-    return Module._resolveFilename(specifier, this._module, false, {});
+    return Module._resolveFilename(specifier, @module, false, {});
   }
 
   load(specifier) {
     startModuleTranslation();
     try {
-      return this._module.require(this.resolve(specifier));
+      return @module.require(this.resolve(specifier));
     } finally {
       endModuleTranslation();
     }
   }
 
-  static setTranslator(fn) {
-    translate = fn;
-  }
+}
 
-  static startTranslation() {
-    startModuleTranslation();
-    return endModuleTranslation;
-  }
-
+export function registerLoader() {
+  startModuleTranslation();
+  return endModuleTranslation;
 }
 
 let originals = null;
@@ -75,7 +70,11 @@ function shouldTranslate(filename) {
 
 function compileOverride(content, filename) {
   if (shouldTranslate(filename)) {
-    let result = translate(removeShebang(content), filename);
+    let result = compile(removeShebang(content), {
+      location: filename,
+      module: true,
+      transformModules: true,
+    });
     content = result.output;
     if (result.mappings) {
       translationMappings.set(filename, result.mappings);

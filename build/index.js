@@ -1,5 +1,6 @@
 const { resolve } = require('path');
 const fs = require('fs');
+const { spawn } = require('child_process');
 const { rollup } = require('rollup');
 const nodeResolve = require('rollup-plugin-node-resolve');
 const { compile } = require('./out/compiler.js');
@@ -31,25 +32,47 @@ function selfhostPlugin() {
   };
 }
 
+function smokeTest() {
+  return new Promise((resolve, reject) => {
+    let child = spawn('node', [
+      '../bin/skreet.js',
+      '../parser/src/Parser.js',
+    ], {
+      cwd: __dirname,
+      env: process.env,
+      stdio: ['ignore', 'ignore', 'inherit'],
+    });
+
+    child.on('exit', code => {
+      if (code !== 0) {
+        reject(new Error('Smoke test failed'));
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
 function saveCurrent() {
   function store() {
     if (!fs.existsSync($('build/lkg'))) {
       fs.mkdirSync($('build/lkg'));
     }
-    let baseDir = $(`build/lkg/${ new Date().toISOString().slice(0, 10) }`);
-    let dir = baseDir;
-    for (let i = 1; fs.existsSync(dir); i += 1) {
-      dir = baseDir + '.' + i;
-    }
+    let dir = $(`build/lkg/${ Date.now() }`);
     fs.mkdirSync(dir);
     fs.writeFileSync(`${ dir }/cli.js`, cliCode, { encoding: 'utf8' });
     fs.writeFileSync(`${ dir }/compiler.js`, compilerCode, { encoding: 'utf8' });
   }
 
+  function restore() {
+    fs.writeFileSync('build/out/cli.js', cliCode, { encoding: 'utf8' });
+    fs.writeFileSync('build/out/compiler.js', compilerCode, { encoding: 'utf8' });
+  }
+
   let cliCode = fs.readFileSync($('build/out/cli.js'), 'utf8');
   let compilerCode = fs.readFileSync($('build/out/compiler.js'), 'utf8');
 
-  return { store };
+  return { store, restore };
 }
 
 async function bundle(options) {
@@ -67,8 +90,10 @@ async function bundle(options) {
 }
 
 async function main() {
+  let current;
+
   try {
-    let current = await saveCurrent();
+    current = await saveCurrent();
 
     await bundle({
       input: $('compiler/src/default.js'),
@@ -84,8 +109,14 @@ async function main() {
       },
     });
 
+    await smokeTest();
+
     await current.store();
+
   } catch (e) {
+    if (current) {
+      await current.restore();
+    }
     trap(e);
   }
 }
