@@ -1,22 +1,16 @@
-const load = require('esm')(module);
-const esparse = load('../src');
-const util = load('util');
+import { parse } from '../src/index.js';
+import * as util from 'util';
 
 const HELP = `
 == Global Variables ==
 
 ast  (template tag) : Prints a script AST
 astm (template tag) : Prints a module AST
-esparse             : The full library API
 parse               : Parses JS and returns a ParseResult
 `;
 
-global.esparse = esparse;
-
-global.parse = esparse.parse;
-
 function printAST(input, options) {
-  let result = esparse.parse(input, options);
+  let result = parse(input, options);
   console.log(util.inspect(result.ast, {
     colors: true,
     depth: 50,
@@ -26,6 +20,8 @@ function printAST(input, options) {
 Object.defineProperty(global, 'help', {
   get() { console.log(HELP) }
 });
+
+global.parse = parse;
 
 global.ast = function(strings, ...values) {
   printAST(String.raw(strings, ...values));
