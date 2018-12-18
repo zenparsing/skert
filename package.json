@@ -5,6 +5,7 @@
   "homepage": "https://github.com/zenparsing/skert",
   "dependencies": {},
   "devDependencies": {
+    "rimraf": "^2.6.2",
     "rollup": "^0.68.0",
     "rollup-plugin-node-resolve": "^4.0.0"
   }

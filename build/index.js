@@ -3,7 +3,6 @@ const fs = require('fs');
 const { spawn } = require('child_process');
 const { rollup } = require('rollup');
 const nodeResolve = require('rollup-plugin-node-resolve');
-const { compile } = require('./out/compiler.js');
 
 function $(p) {
   return resolve(__dirname, '../', p);
@@ -15,6 +14,7 @@ function trap(err) {
 }
 
 function selfhostPlugin() {
+  const { compile } = require('./out/compiler.js');
   return {
     name: 'selfhost',
     transform(code, id) {
@@ -69,8 +69,17 @@ function saveCurrent() {
     fs.writeFileSync('build/out/compiler.js', compilerCode, { encoding: 'utf8' });
   }
 
-  let cliCode = fs.readFileSync($('build/out/cli.js'), 'utf8');
-  let compilerCode = fs.readFileSync($('build/out/compiler.js'), 'utf8');
+  let cliCode;
+  let compilerCode;
+
+  try {
+    cliCode = fs.readFileSync($('build/out/cli.js'), 'utf8');
+    compilerCode = fs.readFileSync($('build/out/compiler.js'), 'utf8');
+  } catch (e) {
+    trap(
+      new Error('Build files not found - run build/bootstrap to generate initial builds.')
+    );
+  }
 
   return { store, restore };
 }
