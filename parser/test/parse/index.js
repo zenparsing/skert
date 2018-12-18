@@ -1,4 +1,4 @@
-import { parse } from '../../src/default.js';
+import { parse } from '../../src/index.js';
 import { runTests } from '../runner.js';
 
 runTests({

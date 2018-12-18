@@ -41,7 +41,7 @@
 
 */
 
-import { parse, resolveScopes } from '../../src/default.js';
+import { parse, resolveScopes } from '../../src/index.js';
 import { runTests } from '../runner.js';
 
 function process(source, options) {

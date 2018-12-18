@@ -96,12 +96,12 @@ async function main() {
     current = await saveCurrent();
 
     await bundle({
-      input: $('compiler/src/default.js'),
+      input: $('compiler/src/index.js'),
       output: $('build/out/compiler.js'),
     });
 
     await bundle({
-      input: $('cli/src/default.js'),
+      input: $('cli/src/index.js'),
       output: $('build/out/cli.js'),
       external: ['path', 'fs', 'module', $('cli/src/Compiler.js')],
       paths: {
