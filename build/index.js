@@ -35,7 +35,7 @@ function selfhostPlugin() {
 function smokeTest() {
   return new Promise((resolve, reject) => {
     let child = spawn('node', [
-      '../bin/skreet.js',
+      '../bin/skert.js',
       '../parser/src/Parser.js',
     ], {
       cwd: __dirname,

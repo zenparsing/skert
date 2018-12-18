@@ -11,7 +11,7 @@
 - Call-with syntax
 - Class static blocks
 
-## Node-skreet features
+## Node features
 
 - Modules support (without mjs)
   - No mjs

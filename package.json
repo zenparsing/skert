@@ -1,8 +1,8 @@
 {
-  "name": "skreet",
+  "name": "skert",
   "version": "0.0.1",
   "description": "A JavaScript Dream",
-  "homepage": "https://github.com/zenparsing/skreet",
+  "homepage": "https://github.com/zenparsing/skert",
   "dependencies": {},
   "devDependencies": {
     "rollup": "^0.68.0",
