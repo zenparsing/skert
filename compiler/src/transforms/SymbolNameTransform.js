@@ -20,7 +20,7 @@ export function register({ define, templates, AST }) {
       ));
     }
 
-    getIdentifierName(value) {
+    @getIdentifierName(value) {
       if (@names.has(value)) {
         return @names.get(value);
       }
@@ -38,7 +38,7 @@ export function register({ define, templates, AST }) {
     }
 
     SymbolName(path) {
-      let name = this.getIdentifierName(path.node.value);
+      let name = @getIdentifierName(path.node.value);
       switch (path.parent.node.type) {
         case 'PropertyDefinition':
         case 'MethodDefinition':

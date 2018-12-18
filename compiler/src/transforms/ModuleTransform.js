@@ -42,7 +42,12 @@ export function register({ define, templates, AST }) {
         @visit(node.statements[i]);
       }
 
-      let statements = [new AST.Directive('use strict', new AST.StringLiteral('use strict'))];
+      let statements = [
+        new AST.Directive(
+          'use strict',
+          new AST.StringLiteral('use strict')
+        )
+      ];
 
       for (let { local, exported, hoist } of @exports) {
         if (hoist) {
@@ -224,22 +229,28 @@ export function register({ define, templates, AST }) {
       });
     }
 
-    getPatternDeclarations(node, list) {
+    @getPatternDeclarations(node, list) {
       switch (node.type) {
         case 'VariableDeclaration':
-          node.declarations.forEach(c => this.getPatternDeclarations(c, list));
+          node.declarations.forEach(c =>
+            @getPatternDeclarations(c, list)
+          );
           break;
         case 'VariableDeclarator':
-          this.getPatternDeclarations(node.pattern, list);
+          @getPatternDeclarations(node.pattern, list);
           break;
         case 'Identifier':
           list.push(node);
           break;
         case 'ObjectPattern':
-          node.properties.forEach(p => this.getPatternDeclarations(p.pattern || p.name, list));
+          node.properties.forEach(p =>
+            @getPatternDeclarations(p.pattern || p.name, list)
+          );
           break;
         case 'ArrayPattern':
-          node.elements.forEach(p => this.getPatternDeclarations(p.pattern, list));
+          node.elements.forEach(p =>
+            @getPatternDeclarations(p.pattern, list)
+          );
           break;
       }
     }
@@ -251,7 +262,7 @@ export function register({ define, templates, AST }) {
         let statements = [declaration];
         let bindings = [];
 
-        this.getPatternDeclarations(declaration, bindings);
+        @getPatternDeclarations(declaration, bindings);
 
         for (let ident of bindings) {
           @exports.push({
@@ -334,9 +345,14 @@ export function register({ define, templates, AST }) {
     ExportDefault(node) {
       let { binding } = node;
 
-      if (binding.type === 'FunctionDeclaration' || binding.type === 'ClassDeclaration') {
+      if (
+        binding.type === 'FunctionDeclaration' ||
+        binding.type === 'ClassDeclaration'
+      ) {
         if (!binding.identifier) {
-          binding.identifier = new AST.Identifier(@rootPath.uniqueIdentifier('_default'));
+          binding.identifier = new AST.Identifier(
+            @rootPath.uniqueIdentifier('_default')
+          );
         }
 
         let exportName = {
