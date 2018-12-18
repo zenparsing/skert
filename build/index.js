@@ -35,8 +35,8 @@ function selfhostPlugin() {
 function smokeTest() {
   return new Promise((resolve, reject) => {
     let child = spawn('node', [
-      '../bin/skert.js',
-      '../parser/src/Parser.js',
+      $('bin/skert.js'),
+      $('packages/parser/src/Parser.js'),
     ], {
       cwd: __dirname,
       env: process.env,
@@ -105,16 +105,16 @@ async function main() {
     current = await saveCurrent();
 
     await bundle({
-      input: $('compiler/src/index.js'),
+      input: $('packages/compiler/src/index.js'),
       output: $('build/out/compiler.js'),
     });
 
     await bundle({
-      input: $('cli/src/index.js'),
+      input: $('packages/cli/src/index.js'),
       output: $('build/out/cli.js'),
-      external: ['path', 'fs', 'module', $('cli/src/Compiler.js')],
+      external: ['path', 'fs', 'module', $('packages/cli/src/Compiler.js')],
       paths: {
-        [$('cli/src/Compiler.js')]: './compiler.js',
+        [$('packages/cli/src/Compiler.js')]: './compiler.js',
       },
     });
 
