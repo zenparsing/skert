@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "description": "A JavaScript Dream",
   "homepage": "https://github.com/zenparsing/skert",
+  "bin": {
+    "skert": "./bin/skert.js"
+  },
   "dependencies": {},
   "devDependencies": {
     "rimraf": "^2.6.2",
