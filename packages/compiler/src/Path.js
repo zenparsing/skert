@@ -167,15 +167,15 @@ class ChangeRecord {
 
   apply() {
     switch (@name) {
-      case 'replaceNode': return @replaceNode(@args[0]);
-      case 'insertNodesAfter': return @insertNodesAfter(@args);
-      case 'insertNodesBefore': return @insertNodesBefore(@args);
-      case 'insertDeclaration': return @insertDeclaration(...@args);
+      case 'replaceNode': return this.replaceNode(@args[0]);
+      case 'insertNodesAfter': return this.insertNodesAfter(@args);
+      case 'insertNodesBefore': return this.insertNodesBefore(@args);
+      case 'insertDeclaration': return this.insertDeclaration(...@args);
       default: throw new Error('Invalid change record type');
     }
   }
 
-  @replaceNode(newNode) {
+  replaceNode(newNode) {
     if (@path.@parent) {
       @path.@getLocation((parent, key, index) => {
         if (typeof index !== 'number') {
@@ -191,7 +191,7 @@ class ChangeRecord {
     @path.@node = newNode;
   }
 
-  @insertNodesAfter(nodes) {
+  insertNodesAfter(nodes) {
     @path.@getLocation((parent, key, index) => {
       if (typeof index !== 'number') {
         throw new Error('Node is not contained within a node list');
@@ -200,7 +200,7 @@ class ChangeRecord {
     });
   }
 
-  @insertNodesBefore(nodes) {
+  insertNodesBefore(nodes) {
     @path.@getLocation((parent, key, index) => {
       if (typeof index !== 'number') {
         throw new Error('Node is not contained within a node list');
@@ -209,7 +209,7 @@ class ChangeRecord {
     });
   }
 
-  @insertDeclaration(ident, options) {
+  insertDeclaration(ident, options) {
     let { statements } = getBlock(@path).node;
     let i = 0;
 

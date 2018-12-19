@@ -10,10 +10,11 @@ class ModuleLoader {
     if (!location) {
       location = path.join(process.cwd(), 'module-loader');
     }
+
+    @location = location;
     @module = new Module(location, null);
     @module.filename = location;
     @module.paths = Module._nodeModulePaths(path.dirname(location));
-    @location = location;
   }
 
   resolve(specifier) {

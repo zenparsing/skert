@@ -18,17 +18,43 @@ export function register({ define, templates, AST }) {
 
     execute(rootPath) {
       @rootPath = rootPath;
-      @visit(rootPath.node);
+      this.visit(rootPath.node);
     }
 
-    @visit(node) {
+    visit(node) {
       if (node && this[node.type]) {
         this[node.type](node);
       }
     }
 
-    @replaceWith(newNode) {
+    replaceWith(newNode) {
       @replacements[@index] = newNode;
+    }
+
+    getPatternDeclarations(node, list) {
+      switch (node.type) {
+        case 'VariableDeclaration':
+          node.declarations.forEach(c =>
+            this.getPatternDeclarations(c, list)
+          );
+          break;
+        case 'VariableDeclarator':
+          this.getPatternDeclarations(node.pattern, list);
+          break;
+        case 'Identifier':
+          list.push(node);
+          break;
+        case 'ObjectPattern':
+          node.properties.forEach(p =>
+            this.getPatternDeclarations(p.pattern || p.name, list)
+          );
+          break;
+        case 'ArrayPattern':
+          node.elements.forEach(p =>
+            this.getPatternDeclarations(p.pattern, list)
+          );
+          break;
+      }
     }
 
     Module(node) {
@@ -39,7 +65,7 @@ export function register({ define, templates, AST }) {
 
       for (let i = 0; i < node.statements.length; ++i) {
         @index = i;
-        @visit(node.statements[i]);
+        this.visit(node.statements[i]);
       }
 
       let statements = [
@@ -197,13 +223,13 @@ export function register({ define, templates, AST }) {
         from: node.from,
         exporting: false,
       });
-      @visit(node.imports);
-      @replaceWith(null);
+      this.visit(node.imports);
+      this.replaceWith(null);
     }
 
     NamedImports(node) {
       for (let child of node.specifiers) {
-        @visit(child);
+        this.visit(child);
       }
     }
 
@@ -219,7 +245,7 @@ export function register({ define, templates, AST }) {
         imported: 'default',
         local: node.identifier.value,
       });
-      @visit(node.imports);
+      this.visit(node.imports);
     }
 
     NamespaceImport(node) {
@@ -229,32 +255,6 @@ export function register({ define, templates, AST }) {
       });
     }
 
-    @getPatternDeclarations(node, list) {
-      switch (node.type) {
-        case 'VariableDeclaration':
-          node.declarations.forEach(c =>
-            @getPatternDeclarations(c, list)
-          );
-          break;
-        case 'VariableDeclarator':
-          @getPatternDeclarations(node.pattern, list);
-          break;
-        case 'Identifier':
-          list.push(node);
-          break;
-        case 'ObjectPattern':
-          node.properties.forEach(p =>
-            @getPatternDeclarations(p.pattern || p.name, list)
-          );
-          break;
-        case 'ArrayPattern':
-          node.elements.forEach(p =>
-            @getPatternDeclarations(p.pattern, list)
-          );
-          break;
-      }
-    }
-
     ExportDeclaration(node) {
       let { declaration } = node;
 
@@ -262,7 +262,7 @@ export function register({ define, templates, AST }) {
         let statements = [declaration];
         let bindings = [];
 
-        @getPatternDeclarations(declaration, bindings);
+        this.getPatternDeclarations(declaration, bindings);
 
         for (let ident of bindings) {
           @exports.push({
@@ -275,7 +275,7 @@ export function register({ define, templates, AST }) {
           `);
         }
 
-        @replaceWith(statements);
+        this.replaceWith(statements);
 
       } else {
 
@@ -288,9 +288,9 @@ export function register({ define, templates, AST }) {
 
         if (declaration.type === 'FunctionDeclaration') {
           exportName.hoist = true;
-          @replaceWith(declaration);
+          this.replaceWith(declaration);
         } else {
-          @replaceWith([
+          this.replaceWith([
             declaration,
             templates.statement`
               exports.${ ident.value } = ${ ident.value }
@@ -318,7 +318,7 @@ export function register({ define, templates, AST }) {
         }
 
         @imports.push(reexport);
-        @replaceWith(null);
+        this.replaceWith(null);
 
       } else {
 
@@ -338,7 +338,7 @@ export function register({ define, templates, AST }) {
           `);
         }
 
-        @replaceWith(statements);
+        this.replaceWith(statements);
       }
     }
 
@@ -363,9 +363,9 @@ export function register({ define, templates, AST }) {
 
         if (binding.type === 'FunctionDeclaration') {
           exportName.hoist = true;
-          @replaceWith(binding);
+          this.replaceWith(binding);
         } else {
-          @replaceWith([
+          this.replaceWith([
             binding,
             templates.statement`
               exports.default = ${ binding.identifier.value }
@@ -383,7 +383,7 @@ export function register({ define, templates, AST }) {
           hoist: false,
         });
 
-        @replaceWith(templates.statement`
+        this.replaceWith(templates.statement`
           exports.default = ${ node.binding };
         `);
 
@@ -399,7 +399,7 @@ export function register({ define, templates, AST }) {
         from: node.from,
         exporting: true,
       });
-      @replaceWith(null);
+      this.replaceWith(null);
     }
 
     ExportDefaultFrom(node) {
@@ -411,7 +411,7 @@ export function register({ define, templates, AST }) {
         from: node.from,
         exporting: true,
       });
-      @replaceWith(null);
+      this.replaceWith(null);
     }
 
   }

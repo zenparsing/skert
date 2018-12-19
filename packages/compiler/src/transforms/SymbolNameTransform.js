@@ -5,13 +5,13 @@ export function register({ define, templates, AST }) {
       @names = new Map();
     }
 
-    @replaceRef(path, name) {
+    replaceRef(path, name) {
       path.replaceNode(new AST.ComputedPropertyName(
         new AST.Identifier(name)
       ));
     }
 
-    @replacePrimary(path, name) {
+    replacePrimary(path, name) {
       path.replaceNode(new AST.MemberExpression(
         new AST.ThisExpression(),
         new AST.ComputedPropertyName(
@@ -20,7 +20,7 @@ export function register({ define, templates, AST }) {
       ));
     }
 
-    @getIdentifierName(value) {
+    getIdentifierName(value) {
       if (@names.has(value)) {
         return @names.get(value);
       }
@@ -38,22 +38,22 @@ export function register({ define, templates, AST }) {
     }
 
     SymbolName(path) {
-      let name = @getIdentifierName(path.node.value);
+      let name = this.getIdentifierName(path.node.value);
       switch (path.parent.node.type) {
         case 'PropertyDefinition':
         case 'MethodDefinition':
         case 'ClassField':
-          @replaceRef(path, name);
+          this.replaceRef(path, name);
           break;
         case 'MemberExpression':
           if (path.parent.node.object === path.node) {
-            @replacePrimary(path, name);
+            this.replacePrimary(path, name);
           } else {
-            @replaceRef(path, name);
+            this.replaceRef(path, name);
           }
           break;
         default:
-          @replacePrimary(path, name);
+          this.replacePrimary(path, name);
           break;
       }
     }
