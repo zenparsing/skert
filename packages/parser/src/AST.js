@@ -693,3 +693,11 @@ export function Comment(text) {
   this.end = -1;
   this.text = text;
 }
+
+export function Annotation(target, annotations) {
+  this.type = 'Annotation';
+  this.start = -1;
+  this.end = -1;
+  this.target = target;
+  this.annotations = annotations;
+}

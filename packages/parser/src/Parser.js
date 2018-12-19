@@ -1882,6 +1882,8 @@ export class Parser {
         return this.ClassDeclaration();
       case 'const':
         return this.LexicalDeclaration();
+      case '#':
+        return this.Annotation();
 
       case 'IDENTIFIER':
         if (this.peekLet())
@@ -2567,6 +2569,32 @@ export class Parser {
     }
 
     return this.node(new AST.ExportSpecifier(local, remote), start);
+  }
+
+  Annotation() {
+    let start = this.nodeStart();
+
+    this.read();
+    this.read('[');
+
+    let target = null;
+
+    if (this.peek() === 'IDENTIFIER' && this.peekAt('', 1) === ':') {
+      target = this.Identifier().value;
+      this.read();
+    }
+
+    let list = [];
+
+    while (this.peekUntil(']')) {
+      list.push(this.Expression());
+      if (this.peek() === ',') this.read();
+      else break;
+    }
+
+    this.read(']');
+
+    return this.node(new AST.Annotation(target, list), start);
   }
 
 }
