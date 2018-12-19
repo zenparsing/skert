@@ -51,16 +51,13 @@ function main() {
 
   console.log('..Copying bundle to dist/');
 
-  // Copy bundled files into out folder
-  fs.copyFileSync(
-    path.resolve(dir, `node_modules/${ name }/build/out/compiler.js`),
-    $('build/out/compiler.js')
-  );
-
-  fs.copyFileSync(
-    path.resolve(dir, `node_modules/${ name }/build/out/cli.js`),
-    $('build/out/cli.js')
-  );
+  let srcDir = path.resolve(dir, `node_modules/${ name }/build/out/`);
+  for (let file of fs.readdirSync(srcDir)) {
+    fs.copyFileSync(
+      path.resolve(srcDir, file),
+      $(`build/out/${ file }`)
+    );
+  }
 
   console.log('..Clearing temp folder');
   rimraf.sync(dir);
