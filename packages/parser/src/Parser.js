@@ -983,7 +983,7 @@ export class Parser {
 
             return this.FunctionExpression();
 
-          } else if (next.type === 'IDENTIFIER' && value === 'async') {
+          } else if (value === 'async' && next.type === 'IDENTIFIER') {
 
             this.read();
             this.pushContext(true);
@@ -996,6 +996,10 @@ export class Parser {
               this.fail();
 
             return this.ArrowFunctionHead(value, ident, start);
+
+          } else if (value === 'async' && next.type === '{') {
+
+            return this.AsyncExpression();
           }
         }
 
@@ -1310,6 +1314,16 @@ export class Parser {
     }
 
     return this.node(new AST.TemplateExpression(parts), start);
+  }
+
+  AsyncExpression() {
+    let start = this.nodeStart();
+    this.read();
+    this.pushContext();
+    this.setFunctionType('async');
+    let body = this.FunctionBody();
+    this.popContext();
+    return this.node(new AST.AsyncExpression(body), start);
   }
 
   // === Statements ===

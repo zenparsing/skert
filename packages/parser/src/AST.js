@@ -219,6 +219,13 @@ export function TaggedTemplateExpression(tag, template) {
   this.template = template;
 }
 
+export function AsyncExpression(body) {
+  this.type = 'AsyncExpression';
+  this.start = -1;
+  this.end = -1;
+  this.body = body;
+}
+
 export function NewExpression(callee, args, trailingComma) {
   this.type = 'NewExpression';
   this.start = -1;
