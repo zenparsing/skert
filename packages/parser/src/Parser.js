@@ -2168,7 +2168,6 @@ export class Parser {
   ClassBody(classKind) {
     let start = this.nodeStart();
     let hasConstructor = false;
-    let hasInitializer = false;
     let list = [];
 
     this.pushContext(true);
@@ -2179,18 +2178,11 @@ export class Parser {
       let elem = this.ClassElement(classKind);
 
       switch (elem.type) {
-        case 'ClassInitializer':
-          if (hasInitializer) {
-            this.fail('Duplicate class static block', elem);
-          }
-          hasInitializer = true;
-          break;
-
         case 'MethodDefinition':
           if (elem.kind === 'constructor') {
-            if (hasConstructor) {
+            if (hasConstructor)
               this.fail('Duplicate constructor definitions', elem.name);
-            }
+
             hasConstructor = true;
           }
           break;
@@ -2221,8 +2213,6 @@ export class Parser {
 
     if (token.type === 'IDENTIFIER' && token.value === 'static') {
       switch (this.peekAt('name', 1)) {
-        case '{':
-          return this.ClassInitializer();
         case 'IDENTIFIER':
         case '[':
           this.read();
@@ -2261,16 +2251,6 @@ export class Parser {
     method.static = isStatic;
 
     return method;
-  }
-
-  ClassInitializer() {
-    let start = this.nodeStart();
-    this.read();
-    this.pushContext();
-    this.setFunctionType('');
-    let body = this.FunctionBody();
-    this.popContext();
-    return this.node(new AST.ClassInitializer(body), start);
   }
 
   ClassField(name) {

@@ -693,10 +693,3 @@ export function Comment(text) {
   this.end = -1;
   this.text = text;
 }
-
-export function ClassInitializer(body) {
-  this.type = 'ClassInitializer';
-  this.start = -1;
-  this.end = -1;
-  this.body = body;
-}

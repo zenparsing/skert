@@ -232,9 +232,6 @@ export function runTests(options) {
 
         if (!pass) {
           renderTree(tree, options.ignoreKeys);
-          if (tree.message) {
-            console.log('\nError: ' + tree.message);
-          }
           throw 'stop';
         }
       }
