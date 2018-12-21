@@ -104,6 +104,8 @@ async function main() {
   try {
     current = await saveCurrent();
 
+    let start = Date.now();
+
     await bundle({
       input: $('packages/compiler/src/index.js'),
       output: $('build/out/compiler.js'),
@@ -117,6 +119,8 @@ async function main() {
         [$('packages/cli/src/Compiler.js')]: './compiler.js',
       },
     });
+
+    console.log(`Bundling completed in ${ ((Date.now() - start) / 1000).toFixed(2) }s`);
 
     await smokeTest();
 
