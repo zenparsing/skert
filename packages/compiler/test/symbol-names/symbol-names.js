@@ -17,10 +17,3 @@ test('symbol named methods', `
     [$x]() {}
   });
 `);
-
-test('symbol name primary expression', `
-  @x = 1;
-`, `
-  const $x = Symbol('@x');
-  this[$x] = 1;
-`);

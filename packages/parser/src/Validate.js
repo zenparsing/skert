@@ -21,9 +21,6 @@ export class Validate {
 
         return;
 
-      case 'SymbolName':
-        return;
-
       case 'MemberExpression':
         return;
 

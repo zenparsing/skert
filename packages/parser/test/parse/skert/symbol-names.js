@@ -18,4 +18,7 @@
 /** ({ @foo }) **/
 'shorthand property syntax not allowed with symbol names': {},
 
+/** @foo = 1 **/
+'symbol names not allowed as primary expression': {},
+
 })

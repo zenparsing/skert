@@ -1012,9 +1012,6 @@ export class Parser {
 
         return this.Identifier(true);
 
-      case 'SYMBOL':
-        return this.SymbolName();
-
       case 'REGEX':
         return this.RegularExpression();
 
