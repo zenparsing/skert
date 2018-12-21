@@ -3,6 +3,7 @@ import * as SymbolNameTransform from './SymbolNameTransform.js';
 import * as ModuleTransform from './ModuleTransform.js';
 import * as MethodExtractionTransform from './MethodExtractionTransform.js';
 import * as CallWithTransform from './CallWithTransform.js';
+import * as NullOrTransform from './NullOrTransform.js';
 
 export function getTransforms(options = {}) {
   let list = [
@@ -10,6 +11,7 @@ export function getTransforms(options = {}) {
     SymbolNameTransform,
     MethodExtractionTransform,
     CallWithTransform,
+    NullOrTransform,
   ];
 
   if (options.transformModules) {
