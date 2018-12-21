@@ -389,8 +389,7 @@ export class Parser {
       return '';
 
     let type = token.type;
-
-    return type === 'function' ? type : '';
+    return type === 'function' || type === '{' ? type : '';
   }
 
   peekExpressionEnd() {
@@ -1003,10 +1002,6 @@ export class Parser {
               this.fail();
 
             return this.ArrowFunctionHead(value, ident, start);
-
-          } else if (value === 'async' && next.type === '{') {
-
-            return this.AsyncExpression();
           }
         }
 
@@ -1320,14 +1315,21 @@ export class Parser {
     return this.node(new AST.TemplateExpression(parts), start);
   }
 
-  AsyncExpression() {
+  AsyncBlock() {
     let start = this.nodeStart();
     this.read();
+
     this.pushContext();
-    this.setFunctionType('async');
-    let body = this.FunctionBody();
+    this.context.isAsync = true;
+    this.context.functionBody = true;
+
+    this.read('{');
+    let statements = this.StatementList(true);
+    this.read('}');
+
     this.popContext();
-    return this.node(new AST.AsyncExpression(body), start);
+
+    return this.node(new AST.AsyncBlock(statements), start);
   }
 
   // === Statements ===
@@ -1905,8 +1907,10 @@ export class Parser {
         if (this.peekLet())
           return this.LexicalDeclaration();
 
-        if (this.peekAsync() === 'function')
-          return this.FunctionDeclaration();
+        switch (this.peekAsync()) {
+          case 'function': return this.FunctionDeclaration();
+          case '{': return this.AsyncBlock();
+        }
 
         break;
     }
