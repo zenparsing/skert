@@ -10,6 +10,28 @@
        params: [],
        body: { type: 'FunctionBody', statements: [] } } ] },
 
+/*** #[a] function f() {} ***/
+'function declaration in module':
+{ type: 'Module',
+  statements:
+   [ { type: 'FunctionDeclaration',
+       kind: '',
+       identifier: { type: 'Identifier', value: 'f' },
+       params: [],
+       body: { type: 'FunctionBody', statements: [] } } ] },
+
+/*** #[a] export function f() {} ***/
+'exported function declaration':
+{ type: 'Module',
+  statements:
+   [ { type: 'ExportDeclaration',
+       declaration:
+        { type: 'FunctionDeclaration',
+          kind: '',
+          identifier: { type: 'Identifier', value: 'f' },
+          params: [],
+          body: { type: 'FunctionBody', statements: [] } } } ] },
+
 /** #[a, b] class C {} **/
 'class declaration':
 { type: 'Script',
@@ -18,6 +40,26 @@
        identifier: { type: 'Identifier', value: 'C' },
        base: null,
        body: { type: 'ClassBody', elements: [] } } ] },
+
+/*** #[a] class C {} ***/
+'class declaration in module':
+{ type: 'Module',
+  statements:
+   [ { type: 'ClassDeclaration',
+       identifier: { type: 'Identifier', value: 'C' },
+       base: null,
+       body: { type: 'ClassBody', elements: [] } } ] },
+
+/*** #[a] export class C {} ***/
+'exported class declaration':
+{ type: 'Module',
+  statements:
+   [ { type: 'ExportDeclaration',
+       declaration:
+        { type: 'ClassDeclaration',
+          identifier: { type: 'Identifier', value: 'C' },
+          base: null,
+          body: { type: 'ClassBody', elements: [] } } } ] },
 
 /** #[a] x; **/
 'cannot annotate expression statement': {},

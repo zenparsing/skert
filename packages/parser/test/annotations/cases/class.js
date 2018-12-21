@@ -20,4 +20,18 @@
      [ { type: 'Annotation',
          expressions: [ { type: 'Identifier', value: 'a', context: 'variable' } ] } ] } ],
 
+/*** #[a] class C {} ***/
+'class in module':
+[ { nodeType: 'ClassDeclaration',
+    list:
+     [ { type: 'Annotation',
+         expressions: [ { type: 'Identifier', value: 'a', context: 'variable' } ] } ] } ],
+
+/*** #[a] export class C {} ***/
+'exported class':
+[ { nodeType: 'ClassDeclaration',
+    list:
+     [ { type: 'Annotation',
+         expressions: [ { type: 'Identifier', value: 'a', context: 'variable' } ] } ] } ],
+
 });

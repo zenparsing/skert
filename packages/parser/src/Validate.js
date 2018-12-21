@@ -207,13 +207,17 @@ export class Validate {
   }
 
   checkAnnotationTarget(node) {
+    if (node.type === 'ExportDeclaration') {
+      node = node.declaration;
+    }
+
     switch (node.type) {
       case 'ClassDeclaration':
       case 'FunctionDeclaration':
       case 'PropertyDefinition':
       case 'MethodDefinition':
       case 'ClassField':
-        return;
+        return node;
     }
 
     this.fail('Invalid annotation target', node);

@@ -260,7 +260,7 @@ export class Parser {
   }
 
   addAnnotations(node, annotations) {
-    this.checkAnnotationTarget(node);
+    node = this.checkAnnotationTarget(node);
     this.annotations.set(node, annotations);
   }
 
@@ -2340,25 +2340,34 @@ export class Parser {
     let list = [];
 
     while (this.peekUntil('EOF')) {
+      let annotations = this.AnnotationList();
+      let node;
+
       switch (this.peek()) {
         case 'import':
           switch (this.peekAt('', 1)) {
             case '(':
             case '.':
-              list.push(this.StatementListItem());
+              node = this.StatementListItem();
               break;
             default:
-              list.push(this.ImportDeclaration());
+              node = this.ImportDeclaration();
               break;
           }
           break;
         case 'export':
-          list.push(this.ExportDeclaration());
+          node = this.ExportDeclaration();
           break;
         default:
-          list.push(this.StatementListItem());
+          node = this.StatementListItem();
           break;
       }
+
+      if (annotations) {
+        this.addAnnotations(node, annotations);
+      }
+
+      list.push(node);
     }
 
     return list;
