@@ -26,7 +26,7 @@ const strictReservedWord = new RegExp('^(?:' +
 // === Punctuators ===
 const multiCharPunctuator = new RegExp('^(?:' +
   '--|[+]{2}|' +
-  '&&|[|]{2}|' +
+  '&&|[|]{2}|[?]{2}|' +
   '<<=?|' +
   '>>>?=?|' +
   '[!=]==|' +
@@ -53,8 +53,8 @@ function makeCharTable() {
   add('whitespace', '\t\v\f ');
   add('newline', '\r\n');
   add('decimal-digit', '123456789');
-  add('punctuator-char', '{[]();,?');
-  add('punctuator', '<>+-*%&|^!~=:');
+  add('punctuator-char', '{[]();,');
+  add('punctuator', '<>+-*%&|^!~=:?');
   add('dot', '.');
   add('slash', '/');
   add('rbrace', '}');
@@ -111,6 +111,7 @@ function isPunctuatorNext(c) {
     case '.':
     case ':':
     case '*':
+    case '?':
       return true;
   }
 

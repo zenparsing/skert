@@ -11,41 +11,43 @@ function isIncrement(op) {
 // Returns a binary operator precedence level
 function getPrecedence(op) {
   switch (op) {
-    case '||':
+    case '??':
       return 1;
-    case '&&':
+    case '||':
       return 2;
-    case '|':
+    case '&&':
       return 3;
-    case '^':
+    case '|':
       return 4;
-    case '&':
+    case '^':
       return 5;
+    case '&':
+      return 6;
     case '==':
     case '!=':
     case '===':
     case '!==':
-      return 6;
+      return 7;
     case '<=':
     case '>=':
     case '>':
     case '<':
     case 'instanceof':
     case 'in':
-      return 7;
+      return 8;
     case '>>>':
     case '>>':
     case '<<':
-      return 8;
+      return 9;
     case '+':
     case '-':
-      return 9;
+      return 10;
     case '*':
     case '/':
     case '%':
-      return 10;
-    case '**':
       return 11;
+    case '**':
+      return 12;
   }
 
   return 0;
