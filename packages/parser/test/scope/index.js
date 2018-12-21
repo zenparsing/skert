@@ -78,5 +78,5 @@ function cleanResult(x) {
 runTests({
   dir:  __dirname,
   process,
-  ignoreKeys: ['node', 'message', 'parent', 'start', 'end'],
+  ignoreKeys: ['node', 'message', 'start', 'end'],
 });

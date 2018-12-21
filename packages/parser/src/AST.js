@@ -710,3 +710,10 @@ export function Comment(text) {
   this.end = -1;
   this.text = text;
 }
+
+export function Annotation(expressions) {
+  this.type = 'Annotation';
+  this.start = -1;
+  this.end = -1;
+  this.expressions = expressions;
+}

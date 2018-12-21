@@ -174,6 +174,7 @@ class ParseResult {
     this.lineMap = results.lineMap;
     this.ast = results.ast;
     this.comments = results.comments;
+    this.annotations = results.annotations;
   }
 
   locate(offset) {
@@ -198,6 +199,7 @@ export class Parser {
     this.tokenEnd = scanner.offset;
     this.context = new Context(null);
     this.comments = [];
+    this.annotations = new Map();
   }
 
   createParseResult(ast) {
@@ -206,6 +208,7 @@ export class Parser {
       input: this.input,
       lineMap: this.scanner.lineMap,
       comments: this.comments,
+      annotations: this.annotations,
     });
   }
 
@@ -254,6 +257,11 @@ export class Parser {
   addComment(token) {
     let node = this.node(new AST.Comment(token.value), token.start, token.end);
     this.comments.push(node);
+  }
+
+  addAnnotations(node, annotations) {
+    this.checkAnnotationTarget(node);
+    this.annotations.set(node, annotations);
   }
 
   readToken(type, context) {
@@ -1204,7 +1212,14 @@ export class Parser {
         comma = true;
       } else {
         comma = false;
-        list.push(node = this.PropertyDefinition());
+
+        let annotations = this.AnnotationList();
+        node = this.PropertyDefinition();
+        if (annotations) {
+          this.addAnnotations(node, annotations);
+        }
+
+        list.push(node);
       }
     }
 
@@ -1881,9 +1896,12 @@ export class Parser {
     let expr;
     let dir;
 
-    // TODO: is this wrong for braceless statement lists?
     while (this.peekUntil('}')) {
+      let annotations = this.AnnotationList();
       node = this.StatementListItem();
+      if (annotations) {
+        this.addAnnotations(node, annotations);
+      }
 
       // Check for directives
       if (prologue) {
@@ -2221,7 +2239,11 @@ export class Parser {
     this.read('{');
 
     while (this.peekUntil('}', 'name')) {
+      let annotations = this.AnnotationList();
       let elem = this.ClassElement(classKind);
+      if (annotations) {
+        this.addAnnotations(elem, annotations);
+      }
 
       switch (elem.type) {
         case 'MethodDefinition':
@@ -2613,6 +2635,36 @@ export class Parser {
     }
 
     return this.node(new AST.ExportSpecifier(local, remote), start);
+  }
+
+  AnnotationList() {
+    if (this.peek() !== '#') {
+      return null;
+    }
+
+    let list = [];
+    while (this.peek() === '#') {
+      list.push(this.Annotation());
+    }
+    return list;
+  }
+
+  Annotation() {
+    let start = this.nodeStart();
+    let list = [];
+
+    this.read();
+    this.read('[');
+
+    while (this.peekUntil(']')) {
+      list.push(this.Expression());
+      if (this.peek() === ',') this.read();
+      else break;
+    }
+
+    this.read(']');
+
+    return this.node(new AST.Annotation(list), start);
   }
 
 }

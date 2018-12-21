@@ -206,4 +206,17 @@ export class Validate {
       this.addStrictError('Cannot delete unqualified property in strict mode', node);
   }
 
+  checkAnnotationTarget(node) {
+    switch (node.type) {
+      case 'ClassDeclaration':
+      case 'FunctionDeclaration':
+      case 'PropertyDefinition':
+      case 'MethodDefinition':
+      case 'ClassField':
+        return;
+    }
+
+    this.fail('Invalid annotation target', node);
+  }
+
 }

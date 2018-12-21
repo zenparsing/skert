@@ -5,3 +5,4 @@ import './async-blocks/async-blocks.js';
 import './method-extraction/method-extraction.js';
 import './call-with/call-with.js';
 import './null-or/null-or.js';
+import './annotations/annotations.js';
