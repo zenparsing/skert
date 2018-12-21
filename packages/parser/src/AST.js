@@ -204,6 +204,16 @@ export function CallExpression(callee, args, trailingComma) {
   this.trailingComma = trailingComma;
 }
 
+export function CallWithExpression(subject, callee, args, trailingComma) {
+  this.type = 'CallWithExpression';
+  this.start = -1;
+  this.end = -1;
+  this.subject = subject;
+  this.callee = callee;
+  this.arguments = args;
+  this.trailingComma = trailingComma;
+}
+
 export function TemplateExpression(parts) {
   this.type = 'TemplateExpression';
   this.start = -1;

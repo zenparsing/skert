@@ -810,6 +810,28 @@ export class Parser {
           break;
         }
 
+        case '->': {
+          this.read();
+          let callee = this.MemberExpression(false);
+          this.read('(');
+          let args = this.ArgumentList();
+          let trailingComma = false;
+
+          if (this.peek() === ',') {
+            this.read();
+            trailingComma = true;
+          }
+
+          this.read(')');
+
+          expr = this.node(
+            new AST.CallWithExpression(expr, callee, args, trailingComma),
+            start
+          );
+
+          break;
+        }
+
         case '(': {
           if (!allowCall) {
             exit = true;
