@@ -113,7 +113,9 @@ export class Path {
     scopeInfo.names.add(ident);
 
     if (options.kind) {
-      @changeList.push(new ChangeRecord(this, 'insertDeclaration', [ident, options]));
+      // Declaration insertions are inserted into reverse order
+      // because they are inserted at the top of a statement list
+      @changeList.unshift(new ChangeRecord(this, 'insertDeclaration', [ident, options]));
     }
 
     return ident;
@@ -211,14 +213,8 @@ class ChangeRecord {
 
   insertDeclaration(ident, options) {
     let { statements } = getBlock(@path).node;
-    let i = 0;
 
-    while (i < statements.length) {
-      if (statements[i].type !== 'VariableDeclaration') break;
-      i += 1;
-    }
-
-    statements.splice(i, 0, {
+    statements.unshift({
       type: 'VariableDeclaration',
       kind: options.kind,
       declarations: [{
