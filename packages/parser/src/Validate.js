@@ -195,6 +195,13 @@ export class Validate {
 
   }
 
+  checkMethodExtraction(node) {
+    node = this.unwrapParens(node);
+
+    if (node.type !== 'MemberExpression')
+      this.fail('Invalid method extraction expression', node);
+  }
+
   checkDelete(node) {
     node = this.unwrapParens(node);
 

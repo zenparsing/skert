@@ -86,6 +86,7 @@ function isUnary(op) {
     case '~':
     case '+':
     case '-':
+    case '&':
       return true;
   }
 
@@ -742,8 +743,14 @@ export class Parser {
       this.read();
       expr = this.UnaryExpression();
 
-      if (type === 'delete')
-        this.checkDelete(expr);
+      switch (type) {
+        case 'delete':
+          this.checkDelete(expr);
+          break;
+        case '&':
+          this.checkMethodExtraction(expr);
+          break;
+      }
 
       return this.node(new AST.UnaryExpression(type, expr), start);
     }
