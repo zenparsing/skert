@@ -211,7 +211,7 @@ export function runTests(options) {
       let text = readFile(path);
       let programs = parseTestComments(text);
       let outputs = (new Function('return ' + text))();
-      let keys = Object.keys(outputs);
+      let keys = outputs ? Object.keys(outputs) : [];
 
       for (let i = 0; i < programs.length; ++i) {
         let program = programs[i];
