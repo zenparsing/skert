@@ -26,6 +26,11 @@ global.astScript = function(strings, ...values) {
   printAST(String.raw(strings, ...values), { module: false });
 };
 
+global.exec = function(strings, ...values) {
+  let result = compile(String.raw(strings, ...values));
+  return eval(result.output);
+};
+
 global.skert = function(strings, ...values) {
   let result = compile(String.raw(strings, ...values), {
     module: true,
