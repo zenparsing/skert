@@ -56,10 +56,6 @@ export function register({ define, templates, AST }) {
         member = member.expression;
       }
 
-      // We'll need to store methods in a WeakMap in order
-      // to be "deterministic with respect to inputs"
-      // i.e. idempotent
-
       let helper = this.insertHelper();
 
       if (member.object.type === 'Identifier') {
