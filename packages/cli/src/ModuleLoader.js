@@ -11,20 +11,20 @@ class ModuleLoader {
       location = path.join(process.cwd(), 'module-loader');
     }
 
-    @location = location;
-    @module = new Module(location, null);
-    @module.filename = location;
-    @module.paths = Module._nodeModulePaths(path.dirname(location));
+    this.@location = location;
+    this.@module = new Module(location, null);
+    this.@module.filename = location;
+    this.@module.paths = Module._nodeModulePaths(path.dirname(location));
   }
 
   resolve(specifier) {
-    return Module._resolveFilename(specifier, @module, false, {});
+    return Module._resolveFilename(specifier, this.@module, false, {});
   }
 
   load(specifier) {
     startModuleTranslation();
     try {
-      return @module.require(this.resolve(specifier));
+      return this.@module.require(this.resolve(specifier));
     } finally {
       endModuleTranslation();
     }

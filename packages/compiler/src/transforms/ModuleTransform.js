@@ -6,18 +6,18 @@ export function register({ define, templates, AST }) {
   class ImportExportProcessor {
 
     constructor() {
-      @rootPath = null;
-      @moduleNames = new Map();
-      @reexports = [];
-      @exports = [];
-      @imports = [];
-      @replacements = null;
-      @index = 0;
-      @topImport = null;
+      this.rootPath = null;
+      this.moduleNames = new Map();
+      this.reexports = [];
+      this.exports = [];
+      this.imports = [];
+      this.replacements = null;
+      this.index = 0;
+      this.topImport = null;
     }
 
     execute(rootPath) {
-      @rootPath = rootPath;
+      this.rootPath = rootPath;
       this.visit(rootPath.node);
     }
 
@@ -28,7 +28,7 @@ export function register({ define, templates, AST }) {
     }
 
     replaceWith(newNode) {
-      @replacements[@index] = newNode;
+      this.replacements[this.index] = newNode;
     }
 
     getPatternDeclarations(node, list) {
@@ -61,10 +61,10 @@ export function register({ define, templates, AST }) {
       let moduleScope = resolveScopes(node).children[0];
       let replaceMap = new Map();
 
-      @replacements = Array.from(node.statements);
+      this.replacements = Array.from(node.statements);
 
       for (let i = 0; i < node.statements.length; ++i) {
-        @index = i;
+        this.index = i;
         this.visit(node.statements[i]);
       }
 
@@ -75,7 +75,7 @@ export function register({ define, templates, AST }) {
         )
       ];
 
-      for (let { local, exported, hoist } of @exports) {
+      for (let { local, exported, hoist } of this.exports) {
         if (hoist) {
           statements.push(templates.statement`
             exports.${ exported } = ${ local }
@@ -83,7 +83,7 @@ export function register({ define, templates, AST }) {
         }
       }
 
-      for (let { names, from, exporting } of @imports) {
+      for (let { names, from, exporting } of this.imports) {
         if (exporting && names.length === 1) {
           let { imported, local } = names[0];
           if (imported) {
@@ -102,15 +102,15 @@ export function register({ define, templates, AST }) {
           continue;
         }
 
-        let moduleName = @moduleNames.get(from.value);
+        let moduleName = this.moduleNames.get(from.value);
         if (!moduleName) {
-          moduleName = @rootPath.uniqueIdentifier('_' + from.value
+          moduleName = this.rootPath.uniqueIdentifier('_' + from.value
             .replace(/.*[/\\](?=[^/\\]+$)/, '')
             .replace(/\..*$/, '')
             .replace(/[^a-zA-Z0-1_$]/g, '_')
           );
 
-          @moduleNames.set(from.value, moduleName);
+          this.moduleNames.set(from.value, moduleName);
 
           statements.push(templates.statement`
             let ${ moduleName } = require(${ from })
@@ -168,7 +168,7 @@ export function register({ define, templates, AST }) {
         }
       }
 
-      for (let node of @replacements) {
+      for (let node of this.replacements) {
         if (Array.isArray(node)) {
           node.forEach(n => statements.push(n));
         } else if (node) {
@@ -178,7 +178,7 @@ export function register({ define, templates, AST }) {
 
       node.statements = statements;
 
-      @rootPath.visit({
+      this.rootPath.visit({
         Identifier(path) {
           let expr = replaceMap.get(path.node);
           if (!expr) {
@@ -218,7 +218,7 @@ export function register({ define, templates, AST }) {
     }
 
     ImportDeclaration(node) {
-      @imports.push(@topImport = {
+      this.imports.push(this.topImport = {
         names: [],
         from: node.from,
         exporting: false,
@@ -234,14 +234,14 @@ export function register({ define, templates, AST }) {
     }
 
     ImportSpecifier(node) {
-      @topImport.names.push({
+      this.topImport.names.push({
         imported: node.imported.value,
         local: node.local ? node.local.value : node.imported.value,
       });
     }
 
     DefaultImport(node) {
-      @topImport.names.push({
+      this.topImport.names.push({
         imported: 'default',
         local: node.identifier.value,
       });
@@ -249,7 +249,7 @@ export function register({ define, templates, AST }) {
     }
 
     NamespaceImport(node) {
-      @topImport.names.push({
+      this.topImport.names.push({
         imported: null,
         local: node.identifier.value,
       });
@@ -265,7 +265,7 @@ export function register({ define, templates, AST }) {
         this.getPatternDeclarations(declaration, bindings);
 
         for (let ident of bindings) {
-          @exports.push({
+          this.exports.push({
             local: ident.value,
             exported: ident.value,
             hoist: false,
@@ -298,7 +298,7 @@ export function register({ define, templates, AST }) {
           ]);
         }
 
-        @exports.push(exportName);
+        this.exports.push(exportName);
       }
     }
 
@@ -317,7 +317,7 @@ export function register({ define, templates, AST }) {
           });
         }
 
-        @imports.push(reexport);
+        this.imports.push(reexport);
         this.replaceWith(null);
 
       } else {
@@ -331,7 +331,7 @@ export function register({ define, templates, AST }) {
             hoist: false,
           };
 
-          @exports.push(name);
+          this.exports.push(name);
 
           statements.push(templates.statement`
             exports.${ name.exported } = ${ child.local }
@@ -351,7 +351,7 @@ export function register({ define, templates, AST }) {
       ) {
         if (!binding.identifier) {
           binding.identifier = new AST.Identifier(
-            @rootPath.uniqueIdentifier('_default')
+            this.rootPath.uniqueIdentifier('_default')
           );
         }
 
@@ -373,11 +373,11 @@ export function register({ define, templates, AST }) {
           ]);
         }
 
-        @exports.push(exportName);
+        this.exports.push(exportName);
 
       } else {
 
-        @exports.push({
+        this.exports.push({
           local: null,
           exported: 'default',
           hoist: false,
@@ -391,7 +391,7 @@ export function register({ define, templates, AST }) {
     }
 
     ExportNamespace(node) {
-      @imports.push({
+      this.imports.push({
         names: [{
           imported: null,
           local: node.identifier ? node.identifier.value : null,
@@ -403,7 +403,7 @@ export function register({ define, templates, AST }) {
     }
 
     ExportDefaultFrom(node) {
-      @imports.push({
+      this.imports.push({
         names: [{
           imported: 'default',
           local: node.identifier.value,

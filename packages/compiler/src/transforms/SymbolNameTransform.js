@@ -2,7 +2,7 @@ export function register({ define, templates, AST }) {
   define(rootPath => rootPath.visit(new class SymbolNameVisitor {
 
     constructor() {
-      @names = new Map();
+      this.names = new Map();
     }
 
     replaceRef(path, name) {
@@ -21,8 +21,8 @@ export function register({ define, templates, AST }) {
     }
 
     getIdentifierName(value) {
-      if (@names.has(value)) {
-        return @names.get(value);
+      if (this.names.has(value)) {
+        return this.names.get(value);
       }
 
       let name = rootPath.uniqueIdentifier('$' + value.slice(1), {
@@ -33,7 +33,7 @@ export function register({ define, templates, AST }) {
         ),
       });
 
-      @names.set(value, name);
+      this.names.set(value, name);
       return name;
     }
 
