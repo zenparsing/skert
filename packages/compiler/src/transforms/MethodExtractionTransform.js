@@ -60,7 +60,7 @@ export function registerTransform({ define, context, templates, AST }) {
 
       let helper = this.insertHelper();
 
-      if (member.object.type === 'Identifier') {
+      if (member.object.type === 'Identifier' || member.object.type === 'ThisExpression') {
         path.replaceNode(templates.expression`
           ${ helper }(${ member.object }, ${ member })
         `);

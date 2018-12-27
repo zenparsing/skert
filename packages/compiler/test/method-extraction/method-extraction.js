@@ -33,6 +33,12 @@ test.withContext('helper is stored in context', `
   _extractMethod(obj, obj.fn);
 `);
 
+test.withContext('temp variable is not used for "this"', `
+  &this.fn
+`, `
+  _extractMethod(this, this.fn);
+`);
+
 test.withContext('method extraction with complex object', `
   &(a.b.c.fn)
 `, `
