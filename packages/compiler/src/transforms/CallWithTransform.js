@@ -5,14 +5,20 @@ export function registerTransform({ define, templates, AST }) {
       path.visitChildren(this);
 
       let { node } = path;
+      let call = new AST.CallExpression(node.callee, node.arguments);
 
-      node.arguments.unshift(node.subject);
+      if (node.subject.type === 'Identifier' || node.subject.type === 'ThisExpression') {
+        node.arguments.unshift(node.subject);
+        path.replaceNode(call);
 
-      path.replaceNode(new AST.CallExpression(
-        node.callee,
-        node.arguments,
-        node.trailingComma,
-      ));
+      } else {
+
+        let temp = path.uniqueIdentifier('_tmp', { kind: 'let' });
+        node.arguments.unshift(new AST.Identifier(temp));
+        path.replaceNode(templates.expression`
+          (${ temp } = ${ node.subject }, ${ call })
+        `);
+      }
     }
 
   }));
