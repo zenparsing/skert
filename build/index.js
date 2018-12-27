@@ -107,8 +107,17 @@ async function main() {
     let start = Date.now();
 
     await bundle({
+      input: $('packages/parser/src/index.js'),
+      output: $('build/out/parser.js'),
+    });
+
+    await bundle({
       input: $('packages/compiler/src/index.js'),
       output: $('build/out/compiler.js'),
+      external: [$('packages/compiler/src/Parser.js')],
+      paths: {
+        [$('packages/compiler/src/Parser.js')]: './parser.js',
+      },
     });
 
     await bundle({
