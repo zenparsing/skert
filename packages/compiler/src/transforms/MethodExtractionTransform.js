@@ -1,4 +1,4 @@
-export function register({ define, templates, AST }) {
+export function registerTransform({ define, templates, AST }) {
   define(rootPath => rootPath.visit(new class MethodExtractionTransform {
 
     constructor() {

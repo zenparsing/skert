@@ -1,6 +1,6 @@
 import { resolveScopes } from '../Parser.js';
 
-export function register({ define, templates, AST }) {
+export function registerTransform({ define, templates, AST }) {
   define(rootPath => new ImportExportProcessor().execute(rootPath));
 
   class ImportExportProcessor {

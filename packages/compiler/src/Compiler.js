@@ -52,7 +52,7 @@ function registerTransforms(transforms) {
   };
 
   for (let module of transforms) {
-    module.register(api);
+    module.registerTransform(api);
   }
 
   return registry;
