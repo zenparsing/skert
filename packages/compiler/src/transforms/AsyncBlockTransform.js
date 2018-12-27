@@ -3,11 +3,13 @@ export function registerTransform({ define, templates, AST }) {
 
     AsyncBlock(path) {
       path.visitChildren(this);
+
       let arrow = new AST.ArrowFunction(
         'async',
         [],
         new AST.FunctionBody(path.node.statements)
       );
+
       path.replaceNode(
         new AST.ExpressionStatement(
           new AST.CallExpression(new AST.ParenExpression(arrow), [])

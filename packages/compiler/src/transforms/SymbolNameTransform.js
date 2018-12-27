@@ -1,8 +1,14 @@
-export function registerTransform({ define, templates, AST }) {
+export function registerTransform({ define, context, templates, AST }) {
   define(rootPath => rootPath.visit(new class SymbolNameVisitor {
 
     constructor() {
-      this.names = new Map();
+      let names = context.get('symbolNames');
+      if (!names) {
+        names = new Map();
+        context.set('symbolNames', names);
+      }
+
+      this.names = names;
     }
 
     getIdentifierName(value) {

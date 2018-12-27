@@ -1,8 +1,8 @@
-export function registerTransform({ define, templates, AST }) {
+export function registerTransform({ define, context, templates, AST }) {
   define(rootPath => rootPath.visit(new class MethodExtractionTransform {
 
     constructor() {
-      this.helperName = null;
+      this.helperName = context.get('methodExtractionHelper') || '';
     }
 
     insertHelper() {
@@ -16,7 +16,7 @@ export function registerTransform({ define, templates, AST }) {
           new AST.Identifier('WeakMap'),
           []
         ),
-      })
+      });
 
       this.helperName = rootPath.uniqueIdentifier('_extractMethod', {
         kind: 'const',
@@ -41,6 +41,8 @@ export function registerTransform({ define, templates, AST }) {
           }
         `,
       });
+
+      context.set('methodExtractionHelper', this.helperName);
 
       return this.helperName;
     }
