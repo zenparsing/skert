@@ -3,7 +3,7 @@ import * as SymbolNameTransform from './SymbolNameTransform.js';
 import * as ModuleTransform from './ModuleTransform.js';
 import * as MethodExtractionTransform from './MethodExtractionTransform.js';
 import * as CallWithTransform from './CallWithTransform.js';
-import * as NullOrTransform from './NullOrTransform.js';
+import * as NullCoalescingTransform from './NullCoalescingTransform.js';
 import * as AnnotationTransform from './AnnotationTransform.js';
 
 export function getTransforms(options = {}) {
@@ -12,7 +12,7 @@ export function getTransforms(options = {}) {
     SymbolNameTransform,
     MethodExtractionTransform,
     CallWithTransform,
-    NullOrTransform,
+    NullCoalescingTransform,
     AnnotationTransform,
   ];
 

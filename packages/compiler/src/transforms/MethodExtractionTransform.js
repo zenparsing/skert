@@ -1,5 +1,5 @@
 export function registerTransform({ define, context, templates, AST }) {
-  define(rootPath => rootPath.visit(new class MethodExtractionTransform {
+  define(rootPath => rootPath.visit(new class MethodExtractionVisitor {
 
     constructor() {
       this.helperName = context.get('methodExtractionHelper') || '';

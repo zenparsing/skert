@@ -1,5 +1,5 @@
 export function registerTransform({ define, templates, AST }) {
-  define(rootPath => rootPath.visit(new class NullOrTransform {
+  define(rootPath => rootPath.visit(new class NullCoalescingVisitor {
 
     BinaryExpression(path) {
       path.visitChildren(true);
@@ -10,14 +10,14 @@ export function registerTransform({ define, templates, AST }) {
 
       if (node.left.type === 'Identifier') {
         path.replaceNode(templates.expression`
-          (${ node.left } == null ? ${ node.left } : ${ node.right })
+          (${ node.left } != null ? ${ node.left } : ${ node.right })
         `);
       } else {
         let temp = path.uniqueIdentifier('_temp', { kind: 'let' });
         path.replaceNode(templates.expression`
           (
             ${ temp } = ${ node.left },
-            ${ temp } == null ? ${ temp } : ${ node.right }
+            ${ temp } != null ? ${ temp } : ${ node.right }
           )
         `);
       }
