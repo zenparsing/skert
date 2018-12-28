@@ -4,7 +4,7 @@
 
 ## About
 
-SkertJS is a reimagination of the future of JavaScript.
+SkertJS reimagines the future of JavaScript with simple features that address common problems and work well together.
 
 ## Features
 
