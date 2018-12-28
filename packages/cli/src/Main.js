@@ -22,12 +22,11 @@ function parseArgs(argv) {
   return list;
 }
 
-function fail(msg) {
-  console.log(typeof msg === 'string' ? new Error(msg) : msg);
-  process.exit(1);
+class CliError extends Error {
+  get name() { return this.constructor.name }
 }
 
-export function main(argv = process.argv.slice(2)) {
+export async function main(argv = process.argv.slice(2)) {
   let args = parseArgs(argv);
   let inPath = args.length > 0 ? args[0].trim() : null;
   let outPath = null;
@@ -35,7 +34,7 @@ export function main(argv = process.argv.slice(2)) {
   let options = { createFolder: true, module: true };
 
   if (!inPath) {
-    fail('Missing input path');
+    throw new CliError('Missing input path');
   }
 
   inPath = path.resolve(inPath);
@@ -43,7 +42,7 @@ export function main(argv = process.argv.slice(2)) {
   try {
     folder = fs.statSync(inPath).isDirectory();
   } catch (err) {
-    fail(`Input path "${ inPath }" not found.`);
+    throw new CliError(`Input path "${ inPath }" not found`);
   }
 
   for (let [key, value] of args.named) {
@@ -65,18 +64,16 @@ export function main(argv = process.argv.slice(2)) {
     }
   }
 
-  let promise;
-
-  if (!outPath) {
-    if (folder) {
-      fail('Missing directory output option (--output or -o).');
-    }
-    promise = lib.translateFileToString(inPath, options).then(console.log);
-  } else if (folder) {
-    promise = lib.translateFolder(inPath, outPath, options);
-  } else {
-    promise = lib.translateFile(inPath, outPath, options);
+  if (folder && !outPath) {
+    throw new CliError('Missing directory output option (--output or -o)');
   }
 
-  promise.catch(fail);
+  if (!outPath) {
+    let output = await lib.translateFileToString(inPath, options);
+    console.log(output);
+  } else if (folder) {
+    await lib.translateFolder(inPath, outPath, options);
+  } else {
+    await lib.translateFile(inPath, outPath, options)
+  }
 }

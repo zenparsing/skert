@@ -35,7 +35,7 @@ function selfhostPlugin() {
 function smokeTest() {
   return new Promise((resolve, reject) => {
     let child = spawn('node', [
-      $('bin/skert.js'),
+      $('bin/skertc.js'),
       $('packages/parser/src/Parser.js'),
     ], {
       cwd: __dirname,
@@ -137,6 +137,7 @@ async function main() {
 
   } catch (e) {
     if (current) {
+      console.log('Restoring previous build output')
       await current.restore();
     }
     trap(e);

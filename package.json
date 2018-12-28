@@ -4,7 +4,7 @@
   "description": "A JavaScript Dream",
   "homepage": "https://github.com/zenparsing/skert",
   "bin": {
-    "skert": "./bin/skert.js"
+    "skertc": "./bin/skertc.js"
   },
   "dependencies": {},
   "devDependencies": {
