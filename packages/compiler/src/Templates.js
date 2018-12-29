@@ -12,6 +12,7 @@ export function statementList(literals, ...values) {
 }
 
 export function expression(literals, ...values) {
+  // TODO: Ideally this will treat leading { as object literal
   return moduleTemplate(literals, ...values).statements[0].expression;
 }
 

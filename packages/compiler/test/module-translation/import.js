@@ -87,3 +87,18 @@ test('import and call', `
   let _a = require('a');
   (0, _a.x)();
 `);
+
+test(`import meta`, `
+  import.meta.filename;
+  import.meta.dirname;
+`, `
+  'use strict';
+
+  const importMeta = {
+    require,
+    dirname: __dirname,
+    filename: __filename
+  };
+  importMeta.filename;
+  importMeta.dirname;
+`);

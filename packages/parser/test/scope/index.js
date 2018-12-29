@@ -76,7 +76,7 @@ function cleanResult(x) {
 }
 
 runTests({
-  dir:  __dirname,
+  dir:  import.meta.dirname,
   process,
   ignoreKeys: ['node', 'message', 'start', 'end'],
 });

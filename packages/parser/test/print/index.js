@@ -14,7 +14,7 @@ function compare(a, b) {
 }
 
 runTests({
-  dir:  __dirname,
+  dir:  import.meta.dirname,
   process,
   compare,
 });

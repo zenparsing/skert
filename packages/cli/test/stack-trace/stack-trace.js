@@ -4,7 +4,7 @@ import * as assert from 'assert';
 function getStackLines(err) {
   return err.stack
     .split(/\n/g)
-    .map(line => line.replace(__dirname, '').replace(/\\/g, '/'))
+    .map(line => line.replace(import.meta.dirname, '').replace(/\\/g, '/'))
     .filter(line => !line.includes(' (internal/') && !line.includes('Module.compileOverride'))
     .slice(1);
 }

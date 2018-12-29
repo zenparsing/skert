@@ -14,6 +14,7 @@ export function registerTransform({ define, templates, AST }) {
       this.replacements = null;
       this.index = 0;
       this.topImport = null;
+      this.metaName = null;
     }
 
     execute(rootPath) {
@@ -60,6 +61,7 @@ export function registerTransform({ define, templates, AST }) {
     Module(node) {
       let moduleScope = resolveScopes(node).children[0];
       let replaceMap = new Map();
+      let { rootPath } = this;
 
       this.replacements = Array.from(node.statements);
 
@@ -68,12 +70,7 @@ export function registerTransform({ define, templates, AST }) {
         this.visit(node.statements[i]);
       }
 
-      let statements = [
-        new AST.Directive(
-          'use strict',
-          new AST.StringLiteral('use strict')
-        )
-      ];
+      let statements = [];
 
       for (let { local, exported, hoist } of this.exports) {
         if (hoist) {
@@ -104,7 +101,7 @@ export function registerTransform({ define, templates, AST }) {
 
         let moduleName = this.moduleNames.get(from.value);
         if (!moduleName) {
-          moduleName = this.rootPath.uniqueIdentifier('_' + from.value
+          moduleName = rootPath.uniqueIdentifier('_' + from.value
             .replace(/.*[/\\](?=[^/\\]+$)/, '')
             .replace(/\..*$/, '')
             .replace(/[^a-zA-Z0-1_$]/g, '_')
@@ -178,7 +175,7 @@ export function registerTransform({ define, templates, AST }) {
 
       node.statements = statements;
 
-      this.rootPath.visit({
+      rootPath.visit({
         Identifier(path) {
           let expr = replaceMap.get(path.node);
           if (!expr) {
@@ -210,11 +207,39 @@ export function registerTransform({ define, templates, AST }) {
         },
 
         ImportCall(path) {
+          path.visitChildren(this);
           path.replaceNode(templates.expression`
             Promise.resolve(require(${ path.node.argument }))
           `);
         },
+
+        MetaProperty(path) {
+          path.visitChildren(this);
+          if (path.node.left !== 'import' || path.node.right !== 'meta') {
+            return;
+          }
+          if (!this.metaName) {
+            this.metaName = rootPath.uniqueIdentifier('importMeta', {
+              kind: 'const',
+              initializer: templates.expression`
+                ({
+                  require,
+                  dirname: __dirname,
+                  filename: __filename,
+                })
+              `.expression,
+            });
+          }
+          path.replaceNode(new AST.Identifier(this.metaName));
+        },
       });
+
+      rootPath.applyChanges();
+
+      node.statements.unshift(new AST.Directive(
+        'use strict',
+        new AST.StringLiteral('use strict')
+      ));
     }
 
     ImportDeclaration(node) {

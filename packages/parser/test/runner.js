@@ -1,6 +1,6 @@
-const Path = require('path');
-const FS = require('fs');
-const { inspect } = require('util');
+import * as Path from 'path';
+import * as FS from 'fs';
+import { inspect } from 'util';
 
 const TEST_COMMENT = /\/\*\*[\s\S]+?\*\*\//g;
 const COMMENT_TRIM = /^\/\*+\s+|\s+\*+\/$/g;
@@ -154,7 +154,7 @@ function renderTree(obj, skipKeys) {
 
   let out = inspect(clone(obj), { depth: 10 });
 
-  FS.writeFileSync(Path.resolve(__dirname, '_fail.js'), out, {
+  FS.writeFileSync(Path.resolve(import.meta.dirname, '_fail.js'), out, {
     encoding: 'utf8',
   });
 }
@@ -180,7 +180,7 @@ export function runTests(options) {
   function groupName(path) {
     path = Path.dirname(path);
 
-    if (path.indexOf(__dirname) === 0)
+    if (path.indexOf(import.meta.dirname) === 0)
       path = path.slice(dirname.length);
 
     return path.replace(/[\/\\]/g, '.').replace(/^\./, '');
@@ -188,7 +188,7 @@ export function runTests(options) {
 
   function run() {
     try {
-      FS.unlinkSync(Path.resolve(__dirname, '_fail.js'));
+      FS.unlinkSync(Path.resolve(import.meta.dirname, '_fail.js'));
     } catch (e) {}
 
     let currentGroup = null;
