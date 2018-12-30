@@ -10,9 +10,11 @@ export function registerTransform({ define, templates, AST }) {
         new AST.FunctionBody(path.node.statements)
       );
 
-      path.replaceNode(templates.statement`
-        (${ arrow })().catch(e => { setTimeout(() => { throw e; }, 0); })
-      `);
+      path.replaceNode(
+        new AST.ExpressionStatement(
+          new AST.CallExpression(new AST.ParenExpression(arrow), [])
+        )
+      );
     }
 
   }));

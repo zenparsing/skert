@@ -7,9 +7,5 @@ test('async blocks', `
 `, `
   (async () => {
     await 1;
-  })().catch((e) => {
-    setTimeout(() => {
-      throw e;
-    }, 0);
-  });
+  })();
 `);
