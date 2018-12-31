@@ -93,7 +93,6 @@ function prepareStackTraceOverride(error, stack) {
   return error + stack
     .map(callSite => stringifyCallSite(callSite) || String(callSite))
     .map(frameString => '\n    at ' + frameString)
-    .reverse()
     .join('');
 }
 
