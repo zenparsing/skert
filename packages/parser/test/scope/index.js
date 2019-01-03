@@ -51,8 +51,9 @@ function process(source, options) {
 }
 
 function cleanResult(x) {
-  if (!x || typeof x !== 'object')
+  if (!x || typeof x !== 'object') {
     return x;
+  }
 
   if (x instanceof Map) {
     let obj = {};

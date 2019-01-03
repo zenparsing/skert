@@ -6,11 +6,12 @@ function binarySearch(array, val) {
     let mid = (left + right) >> 1;
     let test = array[mid];
 
-    if (val === test)
+    if (val === test) {
       return mid;
+    }
 
-    if (val < test) right = mid - 1;
-    else left = mid + 1;
+    if (val < test) { right = mid - 1 }
+    else { left = mid + 1 }
   }
 
   return right; // Lower bound
@@ -24,8 +25,9 @@ export class LineMap {
   }
 
   addBreak(offset) {
-    if (offset > this.lastLineBreak)
+    if (offset > this.lastLineBreak) {
       this.lines.push(this.lastLineBreak = offset);
+    }
   }
 
   locate(offset) {

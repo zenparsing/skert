@@ -45,19 +45,22 @@ export function codePointAt(str, offset) {
 
   if (a >= 0xd800 && a <= 0xdbff && str.length > offset + 1) {
     let b = str.charCodeAt(offset + 1);
-    if (b >= 0xdc00 && b <= 0xdfff)
+    if (b >= 0xdc00 && b <= 0xdfff) {
       return (a - 0xd800) * 0x400 + b - 0xdc00 + 0x10000;
+    }
   }
 
   return a;
 }
 
 export function codePointString(code) {
-  if (code > 0x10ffff)
+  if (code > 0x10ffff) {
     return '';
+  }
 
-  if (code <= 0xffff)
+  if (code <= 0xffff) {
     return String.fromCharCode(code);
+  }
 
   // If value is greater than 0xffff, then it must be encoded
   // as 2 UTF-16 code units in a surrogate pair.

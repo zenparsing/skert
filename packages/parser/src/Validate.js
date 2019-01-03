@@ -16,9 +16,9 @@ export class Validate {
 
     switch (node.type) {
       case 'Identifier':
-        if (isPoisonIdent(node.value))
+        if (isPoisonIdent(node.value)) {
           this.addStrictError('Cannot modify ' + node.value + ' in strict mode', node);
-
+        }
         return;
 
       case 'MemberExpression':
@@ -26,7 +26,7 @@ export class Validate {
 
       case 'ObjectPattern':
       case 'ArrayPattern':
-        if (!simple) return;
+        if (!simple) { return }
         break;
 
       case 'ObjectLiteral':
@@ -59,8 +59,9 @@ export class Validate {
 
         let name = node.value;
 
-        if (isPoisonIdent(name))
+        if (isPoisonIdent(name)) {
           this.addStrictError(`Binding cannot be created for '${ name }' in strict mode`, node);
+        }
 
         return;
       }
@@ -88,12 +89,13 @@ export class Validate {
   checkIdentifier(node) {
     let ident = node.value;
 
-    if (ident === 'yield' && this.context.isGenerator)
+    if (ident === 'yield' && this.context.isGenerator) {
       this.fail('yield cannot be an identifier inside of a generator function', node);
-    else if (ident === 'await' && this.context.isAsync)
+    } else if (ident === 'await' && this.context.isAsync) {
       this.fail('await cannot be an identifier inside of an async function', node);
-    else if (isStrictReservedWord(ident))
+    } else if (isStrictReservedWord(ident)) {
       this.addStrictError(ident + ' cannot be used as an identifier in strict mode', node);
+    }
   }
 
   // Checks function formal parameters for strict mode restrictions
@@ -106,12 +108,14 @@ export class Validate {
         continue;
       }
 
-      if (node.initializer)
+      if (node.initializer) {
         this.context.allowUseStrict = false;
+      }
 
       let name = node.pattern.value;
-      if (isPoisonIdent(name))
+      if (isPoisonIdent(name)) {
         this.addStrictError('Parameter name ' + name + ' is not allowed in strict mode', node);
+      }
     }
   }
 
@@ -124,24 +128,29 @@ export class Validate {
 
   // Performs validation on the init portion of a for-in or for-of statement
   checkForInit(init, iterationType) {
-    if (!init)
+    if (!init) {
       return;
+    }
 
     if (!iterationType) {
-      if (init.type !== 'VariableDeclaration')
+      if (init.type !== 'VariableDeclaration') {
         return;
+      }
 
       init.declarations.forEach(decl => {
-        if (decl.initializer)
+        if (decl.initializer) {
           return;
+        }
 
         // Enforce const initialization in for(;;)
-        if (init.kind === 'const')
+        if (init.kind === 'const') {
           this.fail('Missing const initializer', decl.pattern);
+        }
 
         // Enforce pattern initialization in for(;;)
-        if (decl.pattern.type !== 'Identifier')
+        if (decl.pattern.type !== 'Identifier') {
           this.fail('Missing pattern initializer', decl.pattern);
+        }
       });
 
       return;
@@ -160,8 +169,8 @@ export class Validate {
       // Initializers are not allowed in for in and for of
       if (decl.initializer) {
         let msg = 'Invalid initializer in for-' + iterationType + ' statement';
-        if (iterationType === 'in') this.addStrictError(msg, init);
-        else this.fail(msg);
+        if (iterationType === 'in') { this.addStrictError(msg, init) }
+        else { this.fail(msg) }
       }
 
     } else {
@@ -180,12 +189,14 @@ export class Validate {
       let error = node.error;
 
       // Skip if error has been resolved
-      if (!error)
+      if (!error) {
         continue;
+      }
 
       // Skip if this is a strict-mode-only error in sloppy mode
-      if (item.strict && !context.strict)
+      if (item.strict && !context.strict) {
         continue;
+      }
 
       this.fail(error, node);
     }
@@ -195,15 +206,17 @@ export class Validate {
   checkMethodExtraction(node) {
     node = this.unwrapParens(node);
 
-    if (node.type !== 'MemberExpression')
+    if (node.type !== 'MemberExpression') {
       this.fail('Invalid method extraction expression', node);
+    }
   }
 
   checkDelete(node) {
     node = this.unwrapParens(node);
 
-    if (node.type === 'Identifier')
+    if (node.type === 'Identifier') {
       this.addStrictError('Cannot delete unqualified property in strict mode', node);
+    }
   }
 
   checkAnnotationTarget(node) {

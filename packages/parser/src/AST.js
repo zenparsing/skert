@@ -13,15 +13,18 @@ export function forEachChild(node, fn) {
     if (Array.isArray(value)) {
 
       for (let j = 0; j < value.length; ++j) {
-        if (isNode(value[j]))
-          if (fn(value[j], key, j, stop) === stop)
+        if (isNode(value[j])) {
+          if (fn(value[j], key, j, stop) === stop) {
             return;
+          }
+        }
       }
 
     } else if (isNode(value)) {
 
-      if (fn(value, key, null, stop) === stop)
+      if (fn(value, key, null, stop) === stop) {
         return;
+      }
 
     }
   }

@@ -17,8 +17,8 @@ class Scope {
 
   resolveName(name) {
     let record = this.names.get(name);
-    if (record) return record;
-    if (this.parent) return this.parent.resolveName(name);
+    if (record) { return record }
+    if (this.parent) { return this.parent.resolveName(name) }
     return null;
   }
 
@@ -68,8 +68,9 @@ export class ScopeResolver {
     let next = null;
     let freeList = [];
 
-    if (this.stack.length > 0)
+    if (this.stack.length > 0) {
       next = this.stack[this.stack.length - 1];
+    }
 
     this.top.free = freeList;
 
@@ -104,36 +105,41 @@ export class ScopeResolver {
     this.linkScope(scope);
 
     varNames.forEach(n => {
-      if (scope.names.has(n.value))
+      if (scope.names.has(n.value)) {
         this.fail('Cannot shadow lexical declaration with var', n);
-      else if (this.top.type === 'var')
+      } else if (this.top.type === 'var') {
         this.addName(n, 'var');
-      else
+      } else {
         this.top[VarNames].push(n);
+      }
     });
   }
 
   visit(node, kind) {
-    if (!node)
+    if (!node) {
       return;
+    }
 
     let f = this[node.type];
 
-    if (typeof f === 'function')
+    if (typeof f === 'function') {
       f.call(this, node, kind);
-    else
+    } else {
       forEachChild(node, n => this.visit(n, kind));
+    }
   }
 
   hasStrictDirective(statements) {
     for (let i = 0; i < statements.length; ++i) {
       let n = statements[i];
 
-      if (n.type !== 'Directive')
+      if (n.type !== 'Directive') {
         break;
+      }
 
-      if (n.value === 'use strict')
+      if (n.value === 'use strict') {
         return true;
+      }
     }
 
     return false;
@@ -176,11 +182,13 @@ export class ScopeResolver {
     this.popScope(); // param
 
     paramScope.names.forEach((record, name) => {
-      if (blockScope.names.has(name))
+      if (blockScope.names.has(name)) {
         this.fail('Duplicate block declaration', blockScope.names.get(name).declarations[0]);
+      }
 
-      if (strictParams && record.declarations.length > 1)
+      if (strictParams && record.declarations.length > 1) {
         this.fail('Duplicate parameter names', record.declarations[1]);
+      }
     });
   }
 
@@ -188,8 +196,8 @@ export class ScopeResolver {
     let name = node.value;
     let record = this.top.names.get(name);
 
-    if (record) record.references.push(node);
-    else this.top.free.push(node);
+    if (record) { record.references.push(node) }
+    else { this.top.free.push(node) }
   }
 
   addName(node, kind) {
@@ -198,13 +206,15 @@ export class ScopeResolver {
 
     if (record) {
 
-      if (kind !== 'var' && kind !== 'param')
+      if (kind !== 'var' && kind !== 'param') {
         this.fail('Duplicate variable declaration', node);
+      }
 
     } else {
 
-      if (name === 'let' && (kind === 'let' || kind === 'const'))
+      if (name === 'let' && (kind === 'let' || kind === 'const')) {
         this.fail('Invalid binding identifier', node);
+      }
 
       this.top.names.set(name, record = {
         declarations: [],
@@ -217,8 +227,9 @@ export class ScopeResolver {
   }
 
   Script(node) {
-    if (this.hasStrictDirective(node.statements))
+    if (this.hasStrictDirective(node.statements)) {
       this.top.strict = true;
+    }
 
     this.pushScope('block', node);
     forEachChild(node, n => this.visit(n, 'var'));
@@ -328,10 +339,11 @@ export class ScopeResolver {
         break;
 
       case 'declaration':
-        if (kind === 'var' && this.top.type !== 'var')
+        if (kind === 'var' && this.top.type !== 'var') {
           this.top[VarNames].push(node);
-        else
+        } else {
           this.addName(node, kind);
+        }
         break;
     }
   }

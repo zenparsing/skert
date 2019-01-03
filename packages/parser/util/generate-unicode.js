@@ -73,11 +73,13 @@ function getUnicodeVersion(data) {
   let date = /\n#\s*Date:\s*(.+)/;
   let match;
 
-  if (match = version.exec(data))
+  if (match = version.exec(data)) {
     unicodeVersion = match[1];
+  }
 
-  if (match = date.exec(data))
+  if (match = date.exec(data)) {
     unicodeDate = match[1];
+  }
 }
 
 function foldRanges(map) {
@@ -186,11 +188,13 @@ const Tasks = {
     while (match = pattern.exec(propList)) {
       let range = match[1].split('..').map(val => parseInt(val, 16));
 
-      if (range.length === 1)
+      if (range.length === 1) {
         range[1] = range[0];
+      }
 
-      for (let code = range[0]; code <= range[1]; ++code)
+      for (let code = range[0]; code <= range[1]; ++code) {
         wsMap[code] = WHITE_SPACE;
+      }
     }
 
     wsRanges = foldRanges(wsMap);
@@ -221,12 +225,15 @@ const Tasks = {
     while (match = pattern.exec(propList)) {
       let range = match[1].split('..').map(val => parseInt(val, 16));
 
-      if (range.length === 1)
+      if (range.length === 1) {
         range[1] = range[0];
+      }
 
-      for (let code = range[0]; code <= range[1]; ++code)
-        if (idMap[code] !== ID_START)
+      for (let code = range[0]; code <= range[1]; ++code) {
+        if (idMap[code] !== ID_START) {
           idMap[code] = match[2] === 'Start' ? ID_START : ID_CONT;
+        }
+      }
     }
 
     idRanges = foldRanges(idMap);
@@ -258,8 +265,9 @@ const Tasks = {
 Tasks.list = Object.keys(Tasks);
 
 function nextTask() {
-  if (Tasks.list.length === 0)
+  if (Tasks.list.length === 0) {
     return complete();
+  }
 
   let next = Tasks.list.shift();
   Tasks[next]();

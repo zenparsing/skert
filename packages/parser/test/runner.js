@@ -25,14 +25,17 @@ function walkDirectory(dir, fn) {
       stat: statPath(path)
     }))
     .forEach(entry => {
-      if (!entry.stat)
+      if (!entry.stat) {
         return;
+      }
 
-      if (entry.stat.isDirectory())
+      if (entry.stat.isDirectory()) {
         return walkDirectory(entry.path, fn);
+      }
 
-      if (entry.stat.isFile())
+      if (entry.stat.isFile()) {
         fn(entry.path);
+      }
     });
 }
 
@@ -74,8 +77,9 @@ function readFile(filename) {
   text = text.replace(/^\#\!.*/, '');
 
   // From node/lib/module.js/stripBOM
-  if (text.charCodeAt(0) === 0xFEFF)
+  if (text.charCodeAt(0) === 0xFEFF) {
     text = text.slice(1);
+  }
 
   return text;
 }
@@ -99,27 +103,32 @@ function isObject(obj) {
 
 // Returns true if the specified object is 'like' another object
 export function objectsMatch(a, b, skipKeys) {
-  if (a === b)
+  if (a === b) {
     return true;
+  }
 
-  if (!isObject(a) || !isObject(b))
+  if (!isObject(a) || !isObject(b)) {
     return a === b;
+  }
 
   // Each key in control must be in test
-  for (let keys = Object.keys(b), i = 0; i < keys.length; ++i)
-    if (!HOP.call(a, keys[i]))
+  for (let keys = Object.keys(b), i = 0; i < keys.length; ++i) {
+    if (!HOP.call(a, keys[i])) {
       return false;
+    }
+  }
 
   for (let keys = Object.keys(a), i = 0; i < keys.length; ++i) {
     // Control must have same own property
     if (!HOP.call(b, keys[i])) {
-      if (skipKeys && skipKeys.includes(keys[i])) continue;
-      else return false;
+      if (skipKeys && skipKeys.includes(keys[i])) { continue }
+      else { return false }
     }
 
     // Values of own properties must be equal
-    if (!objectsMatch(a[keys[i]], b[keys[i]], skipKeys))
+    if (!objectsMatch(a[keys[i]], b[keys[i]], skipKeys)) {
       return false;
+    }
   }
 
   return true;
@@ -172,16 +181,17 @@ export function runTests(options) {
 
   function printResult(msg, pass) {
     console.log(msg + ' ' + (pass ? Style.green('OK') : Style.bold(Style.red('FAIL'))));
-    if (pass) testsPassed++;
-    else testsFailed++;
+    if (pass) { testsPassed++ }
+    else { testsFailed++ }
   }
 
   // Returns the group name for a test file
   function groupName(path) {
     path = Path.dirname(path);
 
-    if (path.indexOf(import.meta.dirname) === 0)
+    if (path.indexOf(import.meta.dirname) === 0) {
       path = path.slice(dirname.length);
+    }
 
     return path.replace(/[\/\\]/g, '.').replace(/^\./, '');
   }
@@ -201,8 +211,9 @@ export function runTests(options) {
       let tree;
 
       // Only javascript files in nested directories
-      if (!group || Path.extname(path) !== '.js')
+      if (!group || Path.extname(path) !== '.js') {
         return;
+      }
 
       // Print a group header
       if (group !== currentGroup)
@@ -221,10 +232,11 @@ export function runTests(options) {
             module: program.module
           });
         } catch (err) {
-          if (err instanceof SyntaxError)
+          if (err instanceof SyntaxError) {
             tree = { message: err.message };
-          else
+          } else {
             throw err;
+          }
         }
 
         let pass = compare(tree, outputs[keys[i]]);

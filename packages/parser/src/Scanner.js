@@ -152,8 +152,9 @@ export class Scanner {
   }
 
   next(context) {
-    if (this.type !== 'COMMENT')
+    if (this.type !== 'COMMENT') {
       this.newlineBefore = false;
+    }
 
     this.strictError = '';
 
@@ -161,9 +162,9 @@ export class Scanner {
 
       this.start = this.offset;
 
-      this.type = this.start >= this.length ? this.EOF() :
-        context === 'skip' ? this.Skip() :
-          this.Start(context);
+      this.type = this.start >= this.length ? this.EOF()
+        : context === 'skip' ? this.Skip()
+        : this.Start(context);
 
     } while (!this.type);
 
@@ -209,15 +210,17 @@ export class Scanner {
       this.offset++;
       hex = this.readHex(0);
 
-      if (hex.length < 1 || this.readChar() !== '}')
+      if (hex.length < 1 || this.readChar() !== '}') {
         return null;
+      }
 
     } else {
 
       hex = this.readHex(4);
 
-      if (hex.length < 4)
+      if (hex.length < 4) {
         return null;
+      }
     }
 
     return parseInt(hex, 16);
@@ -232,20 +235,23 @@ export class Scanner {
   readIdentifierEscape(startChar) {
     this.offset++;
 
-    if (this.readChar() !== 'u')
+    if (this.readChar() !== 'u') {
       return null;
+    }
 
     let cp = this.readUnicodeEscapeValue();
 
     if (startChar) {
 
-      if (!isIdentifierStart(cp))
+      if (!isIdentifierStart(cp)) {
         return null;
+      }
 
     } else {
 
-      if (!isIdentifierPart(cp))
+      if (!isIdentifierPart(cp)) {
         return null;
+      }
     }
 
     return codePointString(cp);
@@ -279,7 +285,7 @@ export class Scanner {
         return '\n';
 
       case '\r':
-        if (this.peekChar() === '\n') this.offset++;
+        if (this.peekChar() === '\n') { this.offset++ }
         this.lineMap.addBreak(this.offset);
         return continuationChar;
 
@@ -324,7 +330,7 @@ export class Scanner {
     let code = 0;
 
     while (code = this.peekCode()) {
-      if (code >= low && code <= high) this.offset++;
+      if (code >= low && code <= high) { this.offset++ }
       else break;
     }
 
@@ -336,7 +342,7 @@ export class Scanner {
     let code = 0;
 
     while (code = this.peekCode()) {
-      if (code >= 48 && code <= 57) this.offset++;
+      if (code >= 48 && code <= 57) { this.offset++ }
       else break;
     }
 
@@ -360,14 +366,16 @@ export class Scanner {
     let chr = '';
 
     while (chr = this.peekChar()) {
-      if (!hexChar.test(chr))
+      if (!hexChar.test(chr)) {
         break;
+      }
 
       str += chr;
       this.offset++;
 
-      if (str.length === maxLen)
+      if (str.length === maxLen) {
         break;
+      }
     }
 
     return str;
@@ -376,8 +384,9 @@ export class Scanner {
   peekNumberFollow() {
     let c = this.peekCode();
 
-    if (c > 127)
+    if (c > 127) {
       return !isIdentifierStart(this.peekCodePoint());
+    }
 
     return !(
       c > 64 && c < 91 || // A-Z
@@ -403,22 +412,24 @@ export class Scanner {
 
         case 'slash': {
           let next = this.peekCodeAt(1);
-          if (next === 47) return this.LineComment(); // /
-          else if (next === 42) return this.BlockComment(); // *
+          if (next === 47) { return this.LineComment() } // /
+          else if (next === 42) { return this.BlockComment() } // *
         }
       }
 
     } else {
 
       // Unicode newlines
-      if (isNewlineChar(this.peekChar()))
+      if (isNewlineChar(this.peekChar())) {
         return this.Newline(code);
+      }
 
       let cp = this.peekCodePoint();
 
       // Unicode whitespace
-      if (isWhitespace(cp))
+      if (isWhitespace(cp)) {
         return this.UnicodeWhitespace(cp);
+      }
     }
 
     return 'UNKNOWN';
@@ -439,8 +450,7 @@ export class Scanner {
         return this.Identifier(context, code);
 
       case 'rbrace':
-        if (context === 'template') return this.Template();
-        else return this.PunctuatorChar();
+        return context === 'template' ? this.Template() : this.PunctuatorChar();
 
       case 'punctuator':
         return this.Punctuator();
@@ -476,33 +486,36 @@ export class Scanner {
 
       case 'dot':
         next = this.peekCodeAt(1);
-        if (next >= 48 && next <= 57) return this.Number();
-        else return this.Punctuator();
+        if (next >= 48 && next <= 57) { return this.Number() }
+        else { return this.Punctuator() }
 
       case 'slash':
         next = this.peekCodeAt(1);
-        if (next === 47) return this.LineComment(); // /
-        else if (next === 42) return this.BlockComment(); // *
-        else if (context === 'div') return this.Punctuator();
-        else return this.RegularExpression();
+        if (next === 47) { return this.LineComment() } // /
+        else if (next === 42) { return this.BlockComment() } // *
+        else if (context === 'div') { return this.Punctuator() }
+        else { return this.RegularExpression() }
 
       case 'symbol':
         return this.Symbol();
     }
 
     // Unicode newlines
-    if (isNewlineChar(this.peekChar()))
+    if (isNewlineChar(this.peekChar())) {
       return this.Newline(code);
+    }
 
     let cp = this.peekCodePoint();
 
     // Unicode whitespace
-    if (isWhitespace(cp))
+    if (isWhitespace(cp)) {
       return this.UnicodeWhitespace(cp);
+    }
 
     // Unicode identifier chars
-    if (isIdentifierStart(cp))
+    if (isIdentifierStart(cp)) {
       return this.Identifier(context, cp);
+    }
 
     return this.Error();
   }
@@ -514,10 +527,11 @@ export class Scanner {
 
     while (code = this.peekCode()) {
       // ASCII Whitespace:  [\t] [\v] [\f] [ ]
-      if (code === 9 || code === 11 || code === 12 || code === 32)
+      if (code === 9 || code === 11 || code === 12 || code === 32) {
         this.offset++;
-      else
+      } else {
         break;
+      }
     }
 
     return '';
@@ -527,8 +541,9 @@ export class Scanner {
     this.offset += codePointLength(cp);
 
     // General unicode whitespace
-    while (isWhitespace(cp = this.peekCodePoint()))
+    while (isWhitespace(cp = this.peekCodePoint())) {
       this.offset += codePointLength(cp);
+    }
 
     return '';
   }
@@ -537,8 +552,9 @@ export class Scanner {
     this.offset++;
 
     // Treat /r/n as a single newline
-    if (code === 13 && this.peekCode() === 10)
+    if (code === 13 && this.peekCode() === 10) {
       this.offset++;
+    }
 
     this.lineMap.addBreak(this.offset);
     this.newlineBefore = true;
@@ -591,8 +607,9 @@ export class Scanner {
       if (chr === '\\') {
         esc = this.readStringEscape('\n');
 
-        if (esc === null)
+        if (esc === null) {
           return this.Error();
+        }
 
         val += esc;
       } else {
@@ -601,8 +618,9 @@ export class Scanner {
       }
     }
 
-    if (!chr)
+    if (!chr) {
       return this.Error();
+    }
 
     this.offset++;
     this.value = val;
@@ -618,18 +636,21 @@ export class Scanner {
     let chr = '';
 
     while (chr = this.input[this.offset]) {
-      if (chr === delim)
+      if (chr === delim) {
         break;
+      }
 
-      if (isNewlineChar(chr, true))
+      if (isNewlineChar(chr, true)) {
         return this.Error();
+      }
 
       if (chr === '\\') {
 
         esc = this.readStringEscape('');
 
-        if (esc === null)
+        if (esc === null) {
           return this.Error();
+        }
 
         val += esc;
 
@@ -640,8 +661,9 @@ export class Scanner {
       }
     }
 
-    if (!chr)
+    if (!chr) {
       return this.Error();
+    }
 
     this.offset++;
     this.value = val;
@@ -660,8 +682,9 @@ export class Scanner {
     let flagStart = 0;
 
     while (chr = this.readChar()) {
-      if (isNewlineChar(chr))
+      if (isNewlineChar(chr)) {
         return this.Error();
+      }
 
       if (backslash) {
         val += '\\' + chr;
@@ -681,8 +704,9 @@ export class Scanner {
       }
     }
 
-    if (!chr)
+    if (!chr) {
       return this.Error();
+    }
 
     flagStart = this.offset;
 
@@ -695,10 +719,11 @@ export class Scanner {
 
       } else if (code > 127) {
 
-        if (isIdentifierPart(code = this.peekCodePoint()))
+        if (isIdentifierPart(code = this.peekCodePoint())) {
           this.offset += codePointLength(code);
-        else
+        } else {
           break;
+        }
 
       } else if (isIdentifierPartAscii(code)) {
 
@@ -723,18 +748,17 @@ export class Scanner {
     let code = 0;
 
     while (code = this.peekCode()) {
-      if (code >= 48 && code <= 55)
-        this.offset++;
-      else
-        break;
+      if (code >= 48 && code <= 55) { this.offset++ }
+      else { break }
     }
 
     this.strictError = 'Octal literals are not allowed in strict mode';
 
     let val = parseInt(this.input.slice(start, this.offset), 8);
 
-    if (!this.peekNumberFollow())
+    if (!this.peekNumberFollow()) {
       return this.Error();
+    }
 
     this.number = val;
 
@@ -765,18 +789,21 @@ export class Scanner {
 
         next = this.peekChar();
 
-        if (next === '+' || next === '-')
+        if (next === '+' || next === '-') {
           this.offset++;
+        }
 
-        if (!this.readInteger())
+        if (!this.readInteger()) {
           return this.Error();
+        }
       }
 
       val = parseFloat(this.input.slice(start, this.offset));
     }
 
-    if (!this.peekNumberFollow())
+    if (!this.peekNumberFollow()) {
       return this.Error();
+    }
 
     this.number = val;
 
@@ -789,8 +816,9 @@ export class Scanner {
     let val = parseInt(this.readRange(48, 49), 2);
     this.readIntegerSuffix();
 
-    if (!this.peekNumberFollow())
+    if (!this.peekNumberFollow()) {
       return this.Error();
+    }
 
     this.number = val;
 
@@ -803,8 +831,9 @@ export class Scanner {
     let val = parseInt(this.readRange(48, 55), 8);
     this.readIntegerSuffix();
 
-    if (!this.peekNumberFollow())
+    if (!this.peekNumberFollow()) {
       return this.Error();
+    }
 
     this.number = val;
 
@@ -817,8 +846,9 @@ export class Scanner {
     let val = parseInt(this.readHex(0), 16);
     this.readIntegerSuffix();
 
-    if (!this.peekNumberFollow())
+    if (!this.peekNumberFollow()) {
       return this.Error();
+    }
 
     this.number = val;
 
@@ -836,8 +866,9 @@ export class Scanner {
 
       esc = this.readIdentifierEscape(true);
 
-      if (esc === null)
+      if (esc === null) {
         return this.Error();
+      }
 
       val = esc;
       start = this.offset;
@@ -861,18 +892,20 @@ export class Scanner {
         val += this.input.slice(start, this.offset);
         esc = this.readIdentifierEscape(false);
 
-        if (esc === null)
+        if (esc === null) {
           return this.Error();
+        }
 
         val += esc;
         start = this.offset;
 
       } else if (code > 127) {
 
-        if (isIdentifierPart(code = this.peekCodePoint()))
+        if (isIdentifierPart(code = this.peekCodePoint())) {
           this.offset += codePointLength(code);
-        else
+        } else {
           break;
+        }
 
       } else if (isIdentifierPartAscii(code)) {
 
@@ -888,8 +921,9 @@ export class Scanner {
 
     this.value = val;
 
-    if (context !== 'name' && isReservedWord(val))
+    if (context !== 'name' && isReservedWord(val)) {
       return esc ? this.Error() : val;
+    }
 
     return 'IDENTIFIER';
   }
@@ -906,8 +940,9 @@ export class Scanner {
     let chr = '';
 
     while (chr = this.peekChar()) {
-      if (isNewlineChar(chr))
+      if (isNewlineChar(chr)) {
         break;
+      }
 
       this.offset++;
     }
@@ -927,12 +962,13 @@ export class Scanner {
       pattern.lastIndex = this.offset;
 
       let m = pattern.exec(this.input);
-      if (!m) return this.Error();
+      if (!m) { return this.Error() }
 
       this.offset = m.index + m[0].length;
 
-      if (m[0] === '*/')
+      if (m[0] === '*/') {
         break;
+      }
 
       this.newlineBefore = true;
       this.lineMap.addBreak(m.index);
@@ -948,8 +984,9 @@ export class Scanner {
   }
 
   Error() {
-    if (this.start === this.offset)
+    if (this.start === this.offset) {
       this.offset++;
+    }
 
     return 'ILLEGAL';
   }

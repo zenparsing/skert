@@ -27,8 +27,9 @@ export class Printer {
   }
 
   addMapping(node) {
-    if (typeof node.start !== 'number' || node.start < 0 || node.start === this.inputStart)
+    if (typeof node.start !== 'number' || node.start < 0 || node.start === this.inputStart) {
       return;
+    }
 
     this.inputStart = node.start;
 
@@ -52,8 +53,9 @@ export class Printer {
 
     this.currentLineOffset = this.output.length;
 
-    if (this.indentWidth > 0)
+    if (this.indentWidth > 0) {
       this.output += ' '.repeat(this.indentWidth * this.depth);
+    }
   }
 
   print(ast, options = {}) {
@@ -117,8 +119,8 @@ export class Printer {
           this.newline();
           break;
         default:
-          if (typeof args[i] === 'string') this.output += args[i];
-          else this.printNode(args[i]);
+          if (typeof args[i] === 'string') { this.output += args[i] }
+          else { this.printNode(args[i]) }
           break;
       }
     }
@@ -129,13 +131,13 @@ export class Printer {
     for (let i = 0; i < list.length; ++i) {
       let node = list[i];
       if (i > 0) {
-        if (typeof sep === 'function') sep(node, prev);
-        else if (sep === undefined) this.write(',', SPACE);
-        else if (Array.isArray(sep)) this.write(...sep);
-        else this.write(sep);
+        if (typeof sep === 'function') { sep(node, prev) }
+        else if (sep === undefined) { this.write(',', SPACE) }
+        else if (Array.isArray(sep)) { this.write(...sep) }
+        else { this.write(sep) }
       }
       this.printNode(node);
-      if (node && node.type === 'VariableDeclaration') this.write(';');
+      if (node && node.type === 'VariableDeclaration') { this.write(';') }
       prev = node;
     }
   }
@@ -240,7 +242,7 @@ export class Printer {
 
   YieldExpression(node) {
     this.write('yield');
-    if (node.delegate) this.write(SPACE, '*');
+    if (node.delegate) { this.write(SPACE, '*') }
     this.write(SPACE, node.expression);
   }
 
@@ -261,19 +263,19 @@ export class Printer {
   }
 
   UpdateExpression(node) {
-    if (node.prefix) this.write(node.operator, node.expression);
-    else this.write(node.expression, node.operator);
+    if (node.prefix) { this.write(node.operator, node.expression) }
+    else { this.write(node.expression, node.operator) }
   }
 
   UnaryExpression(node) {
     this.write(node.operator);
-    if (node.operator.length > 1) this.write(' ');
+    if (node.operator.length > 1) { this.write(' ') }
     this.write(node.expression);
   }
 
   MemberExpression(node) {
     this.write(node.object);
-    if (node.property.type === 'Identifier') this.write('.');
+    if (node.property.type === 'Identifier') { this.write('.') }
     this.write(node.property);
   }
 
@@ -357,8 +359,8 @@ export class Printer {
 
   PatternProperty(node) {
     this.write(node.name);
-    if (node.pattern) this.write(':', SPACE, node.pattern);
-    if (node.initializer) this.write(SPACE, '=', SPACE, node.initializer);
+    if (node.pattern) { this.write(':', SPACE, node.pattern) }
+    if (node.initializer) { this.write(SPACE, '=', SPACE, node.initializer) }
   }
 
   ArrayPattern(node) {
@@ -370,7 +372,7 @@ export class Printer {
 
   PatternElement(node) {
     this.write(node.pattern);
-    if (node.initializer) this.write(SPACE, '=', SPACE, node.initializer);
+    if (node.initializer) { this.write(SPACE, '=', SPACE, node.initializer) }
   }
 
   PatternRestElement(node) {
@@ -378,7 +380,7 @@ export class Printer {
   }
 
   MethodDefinition(node) {
-    if (node.static) this.write('static ');
+    if (node.static) { this.write('static ') }
 
     switch (node.kind) {
       case 'generator': this.write('*'); break;
@@ -433,8 +435,9 @@ export class Printer {
 
   VariableDeclarator(node) {
     this.write(node.pattern);
-    if (node.initializer)
+    if (node.initializer) {
       this.write(SPACE, '=', SPACE, node.initializer);
+    }
   }
 
   ReturnStatement(node) {
@@ -447,13 +450,13 @@ export class Printer {
 
   BreakStatement(node) {
     this.write('break');
-    if (node.label) this.write(' ', node.label);
+    if (node.label) { this.write(' ', node.label) }
     this.write(';');
   }
 
   ContinueStatement(node) {
     this.write('continue');
-    if (node.label) this.write(' ', node.label);
+    if (node.label) { this.write(' ', node.label) }
     this.write(';');
   }
 
@@ -504,7 +507,7 @@ export class Printer {
 
   ForOfStatement(node) {
     this.write('for');
-    if (node.async) this.write(' await');
+    if (node.async) { this.write(' await') }
     this.write(SPACE, '(', node.left, ' of ', node.right, ')', SPACE, node.body);
   }
 
@@ -525,8 +528,8 @@ export class Printer {
   }
 
   SwitchCase(node) {
-    if (node.test) this.write('case ', node.test, ':');
-    else this.write('default:');
+    if (node.test) { this.write('case ', node.test, ':') }
+    else { this.write('default:') }
     if (node.consequent.length > 0) {
       this.write(INDENT);
       this.writeStatements(node.consequent);
@@ -536,8 +539,8 @@ export class Printer {
 
   TryStatement(node) {
     this.write('try', SPACE, node.block);
-    if (node.handler) this.write(SPACE, node.handler);
-    if (node.finalizer) this.write(SPACE, 'finally', SPACE, node.finalizer);
+    if (node.handler) { this.write(SPACE, node.handler) }
+    if (node.finalizer) { this.write(SPACE, 'finally', SPACE, node.finalizer) }
   }
 
   CatchClause(node) {
@@ -549,16 +552,19 @@ export class Printer {
   }
 
   FunctionExpression(node) {
-    if (node.kind === 'async' || node.kind === 'async-generator')
+    if (node.kind === 'async' || node.kind === 'async-generator') {
       this.write('async ');
+    }
 
     this.write('function');
 
-    if (node.kind === 'generator' || node.kind === 'async-generator')
+    if (node.kind === 'generator' || node.kind === 'async-generator') {
       this.write('*');
+    }
 
-    if (node.identifier)
+    if (node.identifier) {
       this.write(' ', node.identifier);
+    }
 
     this.write('(');
     this.writeList(node.params);
@@ -567,8 +573,9 @@ export class Printer {
 
   FormalParameter(node) {
     this.write(node.pattern);
-    if (node.initializer)
+    if (node.initializer) {
       this.write(SPACE, '=', SPACE, node.initializer);
+    }
   }
 
   RestParameter(node) {
@@ -586,8 +593,9 @@ export class Printer {
   }
 
   ArrowFunction(node) {
-    if (node.kind === 'async')
+    if (node.kind === 'async') {
       this.write('async ');
+    }
 
     this.write('(');
     this.writeList(node.params);
@@ -600,8 +608,8 @@ export class Printer {
 
   ClassExpression(node) {
     this.write('class');
-    if (node.identifier) this.write(' ', node.identifier);
-    if (node.base) this.write(' extends ', node.base);
+    if (node.identifier) { this.write(' ', node.identifier) }
+    if (node.base) { this.write(' extends ', node.base) }
     this.write(SPACE, node.body);
   }
 
@@ -611,8 +619,8 @@ export class Printer {
     } else {
       this.write('{', INDENT);
       this.writeList(node.elements, (node, prev) => {
-        if (!(node.type === 'ClassField' && prev.type === 'ClassField')) this.newline(2);
-        else this.newline();
+        if (!(node.type === 'ClassField' && prev.type === 'ClassField')) { this.newline(2) }
+        else { this.newline() }
       });
       this.write(OUTDENT, '}');
     }
@@ -623,9 +631,9 @@ export class Printer {
   }
 
   ClassField(node) {
-    if (node.static) this.write('static ');
+    if (node.static) { this.write('static ') }
     this.write(node.name);
-    if (node.initializer) this.write(SPACE, '=', SPACE, node.initializer);
+    if (node.initializer) { this.write(SPACE, '=', SPACE, node.initializer) }
     this.write(';');
   }
 
@@ -635,7 +643,7 @@ export class Printer {
 
   ImportDeclaration(node) {
     this.write('import ');
-    if (node.imports) this.write(node.imports, ' from ');
+    if (node.imports) { this.write(node.imports, ' from ') }
     this.write(node.from, ';');
   }
 
@@ -651,12 +659,12 @@ export class Printer {
 
   DefaultImport(node) {
     this.write(node.identifier);
-    if (node.imports) this.write(',', SPACE, node.imports);
+    if (node.imports) { this.write(',', SPACE, node.imports) }
   }
 
   ImportSpecifier(node) {
     this.write(node.imported);
-    if (node.local) this.write(' as ', node.local);
+    if (node.local) { this.write(' as ', node.local) }
   }
 
   ExportDeclaration(node) {
@@ -674,13 +682,13 @@ export class Printer {
     this.write('export', SPACE, '{', SPACE);
     this.writeList(node.specifiers);
     this.write(SPACE, '}');
-    if (node.from) this.write(SPACE, 'from', SPACE, node.from);
+    if (node.from) { this.write(SPACE, 'from', SPACE, node.from) }
     this.write(';');
   }
 
   ExportNamespace(node) {
     this.write('export *');
-    if (node.identifier) this.write(' as ', node.identifier);
+    if (node.identifier) { this.write(' as ', node.identifier) }
     this.write(' from ', node.from, ';');
   }
 
@@ -690,7 +698,7 @@ export class Printer {
 
   ExportSpecifier(node) {
     this.write(node.local);
-    if (node.exported) this.write(' as ', node.exported);
+    if (node.exported) { this.write(' as ', node.exported) }
   }
 
 }

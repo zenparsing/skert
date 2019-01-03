@@ -5,8 +5,9 @@ export class Transform {
 
   // Transform an expression into a formal parameter list
   transformFormals(expr) {
-    if (!expr)
+    if (!expr) {
       return [];
+    }
 
     let trailingComma = false;
     let list;
@@ -36,12 +37,14 @@ export class Transform {
         expr = node.expression;
 
         // Trailing commas not allowed after rest parameters
-        if (trailingComma)
+        if (trailingComma) {
           this.fail('Trailing comma not allowed after rest parameter', expr);
+        }
 
         // Rest parameters can only be identifiers
-        if (expr.type !== 'Identifier')
+        if (expr.type !== 'Identifier') {
           this.fail('Invalid rest parameter', expr);
+        }
 
         this.checkBindingTarget(expr);
 
@@ -71,14 +74,16 @@ export class Transform {
       let elem = elems[i];
 
       // Skip holes in pattern
-      if (!elem)
+      if (!elem) {
         continue;
+      }
 
       switch (elem.type) {
         case 'SpreadExpression':
           // Rest element must be in the last position and cannot be followed by a comma
-          if (i < elems.length - 1 || node.trailingComma)
+          if (i < elems.length - 1 || node.trailingComma) {
             this.fail('Invalid destructuring pattern', elem);
+          }
 
           elem = this.node(new AST.PatternRestElement(elem.expression), elem.start, elem.end);
           this.checkPatternTarget(elem.pattern, binding);
@@ -125,8 +130,9 @@ export class Transform {
 
         case 'SpreadExpression':
           // Rest element must be in the last position and cannot be followed by a comma
-          if (i < props.length - 1 || node.trailingComma)
+          if (i < props.length - 1 || node.trailingComma) {
             this.fail('Invalid destructuring pattern', prop);
+          }
 
           // Rest target cannot be a destructuring pattern
           switch (prop.expression.type) {
@@ -149,10 +155,11 @@ export class Transform {
 
       props[i] = prop;
 
-      if (prop.pattern)
+      if (prop.pattern) {
         this.transformPatternElement(prop, binding);
-      else
+      } else {
         this.checkPatternTarget(prop.name, binding);
+      }
     }
   }
 
@@ -171,8 +178,9 @@ export class Transform {
   transformIdentifier(node) {
     let value = node.value;
 
-    if (isReservedWord(value))
+    if (isReservedWord(value)) {
       this.fail('Unexpected token ' + value, node);
+    }
 
     this.checkIdentifier(node);
     node.context = 'variable';
