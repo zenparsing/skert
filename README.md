@@ -8,18 +8,6 @@ SkertJS reimagines the future of JavaScript with simple features that address co
 
 ## Features
 
-### Async Blocks
-
-Async blocks allow the programmer to use `await` within a script or module body.
-
-```js
-async {
-  let response = await fetch(url);
-  let text = await response.text();
-  console.log(text);
-}
-```
-
 ### Call-With Operator
 
 The call-with binary operator (`->`) allows the programmer to call a function as if it were a method.
