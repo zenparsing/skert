@@ -381,7 +381,7 @@ export class Parser {
         return true;
 
       if (this.isModule)
-        this.fail('Await is reserved within modules');
+        return true;
     }
 
     return false;
