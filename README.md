@@ -96,3 +96,57 @@ function f() {}
 ```
 
 *SkertJS currently discards annotations, but we plan on exposing them at runtime using a reflection API.*
+
+## Install
+
+```
+npm install @zenparsing/skert
+```
+
+## CLI
+
+```
+skertc [input_path] ...options
+```
+
+### Options
+
+- `--output [output_path]`, `-o [output_path]`: Specifies the output file or directory
+- `--script`: Parse the input file or files as scripts instead of modules
+- `--cjs`: Output CommonJS-formatted modules
+- `--sourcemaps`, `-s`: Output source maps
+
+## API
+
+### `compile(code, options = {})`
+
+Compiles the specified input string and returns a `CompileResult` object.
+
+#### Options
+
+- `module` (boolean): If `true`, the input is parsed as a module instead of a script.
+- `transformModules` (boolean): If `true`, modules are translated into CommonJS format.
+- `context` (Map): A map containing state which can be persisted between calls.
+- `location` (string): The path associated with `code`.
+- `sourceMap` (boolean | `'inline'`): If, `true` a source map will be generated and attached to the result object. If `'inline'`, the source map will be added to the output code.
+
+#### Example
+
+```js
+import { compile } from '@zenparsing/skert';
+
+let result = compile('export const x = 1;', {
+  module: true,
+});
+
+console.log(result.output);
+```
+
+### `CompileResult`
+
+#### Properties
+
+- `output` (string): The compiled output
+- `mappings` (Array): A list of input-to-output source code mappings
+- `sourceMap` (`null` | JSON): A source map JSON object
+- `context` (Map): A Map representing compiler state
