@@ -102,13 +102,22 @@ Functions:
 function f() {}
 ```
 
-Properties:
+Class Members:
 
 ```js
 class C {
   #[deprecated]
   oldMethod() {}
 }
+
+```
+
+Properties:
+
+```js
+const obj = {
+  #[deprecated] name: 'Bob'
+};
 ```
 
 *SkertJS currently discards annotations, but we plan on exposing them at runtime using a reflection API.*
