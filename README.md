@@ -7,7 +7,7 @@
 - [Install](#install)
 - [CLI](#cli)
 - [API](#api)
-- [Online REPL](https://zenparsing.github.io/skert/repl)
+- [Online REPL](https://zenparsing.github.io/skert/repl/)
 
 ## About
 
@@ -100,6 +100,15 @@ Functions:
 ```js
 #[deprecated]
 function f() {}
+```
+
+Properties:
+
+```js
+class C {
+  #[deprecated]
+  oldMethod() {}
+}
 ```
 
 *SkertJS currently discards annotations, but we plan on exposing them at runtime using a reflection API.*
