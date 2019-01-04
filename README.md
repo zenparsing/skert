@@ -2,11 +2,16 @@
 
 *JavaScript-to-JavaScript compiler tools for holistic language design.*
 
+- [About](#about)
+- [Features](#features)
+- [Install](#install)
+- [CLI](#cli)
+- [API](#api)
+- [Online REPL](https://zenparsing.github.io/skert/repl)
+
 ## About
 
 SkertJS reimagines the future of JavaScript with simple features that address common problems and work well together.
-
-- [Online REPL](https://zenparsing.github.io/skert/repl)
 
 ## Features
 
