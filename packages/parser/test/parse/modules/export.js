@@ -46,6 +46,7 @@
              value: 'C',
              context: 'declaration' },
           base: null,
+          mixins: null,
           body: { type: 'ClassBody', start: 15, end: 17, elements: [] } } } ] },
 
 /*** export var x; ***/
@@ -277,6 +278,7 @@
              value: 'C',
              context: 'declaration' },
           base: null,
+          mixins: null,
           body: { type: 'ClassBody', start: 23, end: 25, elements: [] } },
        start: 0,
        end: 25 } ] },
@@ -294,6 +296,7 @@
           end: 23,
           identifier: null,
           base: null,
+          mixins: null,
           body: { type: 'ClassBody', start: 21, end: 23, elements: [] } },
        start: 0,
        end: 23 } ] },

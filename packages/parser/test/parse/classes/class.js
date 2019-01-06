@@ -16,6 +16,7 @@
           value: 'C',
           context: 'declaration' },
        base: null,
+       mixins: null,
        body: { type: 'ClassBody', start: 8, end: 10, elements: [] } } ] },
 
 /** (class C {}); **/
@@ -42,6 +43,7 @@
                 value: 'C',
                 context: 'declaration' },
              base: null,
+             mixins: null,
              body: { type: 'ClassBody', start: 9, end: 11, elements: [] } } } } ] },
 
 /** class C extends B {} **/
@@ -65,6 +67,7 @@
           end: 17,
           value: 'B',
           context: 'variable' },
+       mixins: null,
        body: { type: 'ClassBody', start: 18, end: 20, elements: [] } } ] },
 
 /** class C { static S() {} } **/
@@ -83,6 +86,7 @@
           value: 'C',
           context: 'declaration' },
        base: null,
+       mixins: null,
        body:
         { type: 'ClassBody',
           start: 8,
@@ -116,6 +120,7 @@
           value: 'C',
           context: 'declaration' },
        base: null,
+       mixins: null,
        body:
         { type: 'ClassBody',
           start: 8,
@@ -179,6 +184,7 @@
           value: 'C',
           context: 'declaration' },
        base: null,
+       mixins: null,
        body:
         { type: 'ClassBody',
           start: 8,
@@ -217,6 +223,7 @@
           value: 'C',
           context: 'declaration' },
        base: null,
+       mixins: null,
        body:
         { type: 'ClassBody',
           start: 8,
@@ -255,6 +262,7 @@
           value: 'C',
           context: 'declaration' },
        base: null,
+       mixins: null,
        body:
         { type: 'ClassBody',
           start: 8,
@@ -320,6 +328,7 @@
           value: 'C',
           context: 'declaration' },
        base: null,
+       mixins: null,
        body:
         { type: 'ClassBody',
           start: 8,
@@ -344,6 +353,7 @@
           value: 'C',
           context: 'declaration' },
        base: null,
+       mixins: null,
        body:
         { type: 'ClassBody',
           start: 8,
@@ -380,6 +390,7 @@
           value: 'C',
           context: 'declaration' },
        base: null,
+       mixins: null,
        body:
         { type: 'ClassBody',
           start: 8,
@@ -445,6 +456,7 @@
           end: 17,
           value: 'B',
           context: 'variable' },
+       mixins: null,
        body:
         { type: 'ClassBody',
           start: 18,
@@ -505,6 +517,7 @@
           end: 17,
           value: 'B',
           context: 'variable' },
+       mixins: null,
        body:
         { type: 'ClassBody',
           start: 18,
@@ -563,6 +576,7 @@
           end: 17,
           value: 'B',
           context: 'variable' },
+       mixins: null,
        body:
         { type: 'ClassBody',
           start: 18,
@@ -628,6 +642,7 @@
           value: 'A',
           context: 'declaration' },
        base: null,
+       mixins: null,
        body:
         { type: 'ClassBody',
           start: 8,
@@ -655,6 +670,7 @@
                           value: 'B',
                           context: 'declaration' },
                        base: null,
+                       mixins: null,
                        body:
                         { type: 'ClassBody',
                           start: 24,

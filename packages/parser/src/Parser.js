@@ -2252,7 +2252,30 @@ export class Parser {
       base = this.MemberExpression(true);
     }
 
-    return this.node(new AST.ClassDeclaration(ident, base, this.ClassBody(kind)), start);
+    let mixins = null;
+    if (this.peek() === 'with') {
+      this.read();
+      mixins = this.ClassMixinList();
+    }
+
+    return this.node(new AST.ClassDeclaration(
+      ident,
+      base,
+      mixins,
+      this.ClassBody(kind)
+    ), start);
+  }
+
+  ClassMixinList() {
+    let list = [];
+
+    while (true) {
+      list.push(this.MemberExpression(true));
+      if (this.peek() === ',') { this.read() }
+      else { break }
+    }
+
+    return list;
   }
 
   ClassExpression() {
@@ -2273,7 +2296,18 @@ export class Parser {
       base = this.MemberExpression(true);
     }
 
-    return this.node(new AST.ClassExpression(ident, base, this.ClassBody(kind)), start);
+    let mixins = null;
+    if (this.peek() === 'with') {
+      this.read();
+      mixins = this.ClassMixinList();
+    }
+
+    return this.node(new AST.ClassExpression(
+      ident,
+      base,
+      mixins,
+      this.ClassBody(kind)
+    ), start);
   }
 
   ClassBody(classKind) {

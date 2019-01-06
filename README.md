@@ -122,6 +122,27 @@ const obj = {
 
 *SkertJS currently discards annotations, but we plan on exposing them at runtime using a reflection API.*
 
+### Class Mixins
+
+Class mixins allow the programmer to copy additional methods from another class.
+
+```js
+class A {
+  a() { return 'a' }
+}
+
+class B {
+  b() { return 'b' }
+}
+
+class C with A, B {}
+
+const c = new C();
+
+c.a(); // 1
+c.b(); // 2
+```
+
 ## Install
 
 ```

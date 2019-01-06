@@ -4,6 +4,7 @@ import * as MethodExtractionTransform from './MethodExtractionTransform.js';
 import * as CallWithTransform from './CallWithTransform.js';
 import * as NullCoalescingTransform from './NullCoalescingTransform.js';
 import * as AnnotationTransform from './AnnotationTransform.js';
+import * as ClassMixinTransform from './ClassMixinTransform.js';
 
 export function getTransforms(options = {}) {
   let list = [
@@ -12,6 +13,7 @@ export function getTransforms(options = {}) {
     CallWithTransform,
     NullCoalescingTransform,
     AnnotationTransform,
+    ClassMixinTransform,
   ];
 
   if (options.transformModules) {

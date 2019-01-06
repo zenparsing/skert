@@ -569,21 +569,23 @@ export function ArrowFunction(kind, params, body) {
   this.body = body;
 }
 
-export function ClassDeclaration(identifier, base, body) {
+export function ClassDeclaration(identifier, base, mixins, body) {
   this.type = 'ClassDeclaration';
   this.start = -1;
   this.end = -1;
   this.identifier = identifier;
   this.base = base;
+  this.mixins = mixins;
   this.body = body;
 }
 
-export function ClassExpression(identifier, base, body) {
+export function ClassExpression(identifier, base, mixins, body) {
   this.type = 'ClassExpression';
   this.start = -1;
   this.end = -1;
   this.identifier = identifier;
   this.base = base;
+  this.mixins = mixins;
   this.body = body;
 }
 
