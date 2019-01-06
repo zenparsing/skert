@@ -186,7 +186,7 @@ class ParseResult {
 
 }
 
-export class Parser {
+export class Parser with Transform, Validate {
 
   constructor(input, options) {
     options = options || {};
@@ -2766,22 +2766,3 @@ export class Parser {
   }
 
 }
-
-function mixin(target, ...sources) {
-  target = target.prototype;
-
-  let {
-    getOwnPropertyNames: ownNames,
-    getOwnPropertyDescriptor: ownDesc,
-    prototype: { hasOwnProperty: hasOwn },
-  } = Object;
-
-  sources
-    .map(source => source.prototype)
-    .forEach(source => ownNames(source)
-      .filter(key => !hasOwn.call(target, key))
-      .forEach(key => Object.defineProperty(target, key, ownDesc(source, key))));
-}
-
-// Add externally defined methods
-mixin(Parser, Transform, Validate);

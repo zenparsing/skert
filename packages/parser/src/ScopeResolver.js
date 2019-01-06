@@ -1,7 +1,5 @@
 import { forEachChild } from './AST.js';
 
-const VarNames = Symbol();
-
 class Scope {
 
   constructor(type, strict, node = null) {
@@ -12,7 +10,7 @@ class Scope {
     this.free = [];
     this.parent = null;
     this.children = [];
-    this[VarNames] = [];
+    this.@varNames = [];
   }
 
   resolveName(name) {
@@ -37,7 +35,7 @@ export class ScopeResolver {
     this.top = new Scope('var', false, ast);
     this.visit(ast);
     this.flushFree();
-    this.top[VarNames] = null;
+    this.top.@varNames = null;
     return this.top;
   }
 
@@ -96,9 +94,9 @@ export class ScopeResolver {
 
   popScope() {
     let scope = this.top;
-    let varNames = scope[VarNames];
+    let varNames = scope.@varNames;
 
-    scope[VarNames] = null;
+    scope.@varNames = null;
 
     this.flushFree();
     this.top = this.stack.pop();
@@ -110,7 +108,7 @@ export class ScopeResolver {
       } else if (this.top.type === 'var') {
         this.addName(n, 'var');
       } else {
-        this.top[VarNames].push(n);
+        this.top.@varNames.push(n);
       }
     });
   }
@@ -340,7 +338,7 @@ export class ScopeResolver {
 
       case 'declaration':
         if (kind === 'var' && this.top.type !== 'var') {
-          this.top[VarNames].push(node);
+          this.top.@varNames.push(node);
         } else {
           this.addName(node, kind);
         }
