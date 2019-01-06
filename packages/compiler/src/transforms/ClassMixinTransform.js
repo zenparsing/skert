@@ -62,6 +62,13 @@ export function registerTransform({ define, context, templates, AST }) {
       let name = new AST.Identifier(node.identifier.value);
       let helper = this.insertHelper();
 
+      switch (path.parentNode.type) {
+        case 'ExportDeclaration':
+        case 'ExportDefault':
+          path = path.parent;
+          break;
+      }
+
       path.insertNodesAfter(new AST.ExpressionStatement(
         new AST.CallExpression(
           new AST.Identifier(helper),
