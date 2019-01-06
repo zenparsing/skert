@@ -1,10 +1,12 @@
 const { registerLoader } = require('../build/out/cli.js');
 const util = require('util');
+const vm = require('vm');
 
 registerLoader();
 
 const { parse } = require('../packages/parser/src/index.js');
 const { compile } = require('../packages/compiler/src/index.js');
+const context = new Map();
 
 function printAST(input, options) {
   let result = parse(input, options);
@@ -27,8 +29,8 @@ global.astScript = function(strings, ...values) {
 };
 
 global.exec = function(strings, ...values) {
-  let result = compile(String.raw(strings, ...values));
-  return eval(result.output);
+  let result = compile(String.raw(strings, ...values), { context });
+  return vm.runInThisContext(result.output);
 };
 
 global.skert = function(strings, ...values) {
