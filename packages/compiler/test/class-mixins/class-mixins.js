@@ -5,6 +5,7 @@ const test = createRunner({ module: true });
 test.withContext('class declaration with mixin', `
   class A with B, C {}
 `, `
+  const _mixin = Symbol.mixin || Symbol.for('Symbol.mixin');
   const _classMixin = (target, ...sources) => {
     function copy(from, to, skip) {
       for (let key of Reflect.ownKeys(from)) {
@@ -16,7 +17,17 @@ test.withContext('class declaration with mixin', `
     }
 
     for (let source of sources) {
-      copy(source, target, 'prototype');
+      let m = source[_mixin];
+      if (m !== undefined) {
+        if (typeof m !== 'function') {
+          throw new TypeError('Expected Symbol.mixin method to be a function');
+        }
+        m.call(source, target);
+        continue;
+      }
+      if (typeof source !== 'function') {
+        throw new TypeError('Invalid mixin source');
+      }
       if (source.prototype) {
         copy(source.prototype, target.prototype, 'constructor');
       }
