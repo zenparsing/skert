@@ -94,14 +94,14 @@ async function bundle(options) {
   await bundle.write({
     file: $(`build/out/${ options.output }`),
     format: 'cjs',
-    paths: options.path,
+    paths: options.paths,
   });
 
   if (options.web) {
     await bundle.write({
       file:  $(`build/out/web/${ options.output }`),
       format: 'esm',
-      paths: options.path,
+      paths: options.paths,
     });
   }
 }
