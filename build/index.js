@@ -92,10 +92,18 @@ async function bundle(options) {
   });
 
   await bundle.write({
-    file: options.output,
+    file: $(`build/out/${ options.output }`),
     format: 'cjs',
     paths: options.path,
   });
+
+  if (options.web) {
+    await bundle.write({
+      file:  $(`build/out/web/${ options.output }`),
+      format: 'esm',
+      paths: options.path,
+    });
+  }
 }
 
 async function main() {
@@ -108,12 +116,14 @@ async function main() {
 
     await bundle({
       input: $('packages/parser/src/index.js'),
-      output: $('build/out/parser.js'),
+      output: 'parser.js',
+      web: true,
     });
 
     await bundle({
       input: $('packages/compiler/src/index.js'),
-      output: $('build/out/compiler.js'),
+      output: 'compiler.js',
+      web: true,
       external: [$('packages/compiler/src/Parser.js')],
       paths: {
         [$('packages/compiler/src/Parser.js')]: './parser.js',
@@ -122,7 +132,8 @@ async function main() {
 
     await bundle({
       input: $('packages/cli/src/index.js'),
-      output: $('build/out/cli.js'),
+      output: 'cli.js',
+      web: false,
       external: ['path', 'fs', 'module', $('packages/cli/src/Compiler.js')],
       paths: {
         [$('packages/cli/src/Compiler.js')]: './compiler.js',
