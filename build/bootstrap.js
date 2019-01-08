@@ -49,14 +49,15 @@ function main() {
     throw result.error;
   }
 
-  console.log('..Copying bundle to dist/');
+  console.log('..Copying bundle to build/out');
 
   let srcDir = path.resolve(dir, `node_modules/${ name }/build/out/`);
   for (let file of fs.readdirSync(srcDir)) {
-    fs.copyFileSync(
-      path.resolve(srcDir, file),
-      $(`build/out/${ file }`)
-    );
+    let subpath = path.resolve(srcDir, file);
+    if (!fs.statSync(subpath).isDirectory()) {
+      console.log(`..Copying ${ file }`);
+      fs.copyFileSync(subpath, $(`build/out/${ file }`));
+    }
   }
 
   console.log('..Clearing temp folder');
