@@ -49,21 +49,22 @@ exports.validate = function validate(rootPath, { scopeTree, lineMap, location })
 
       for (let p = path.parent; p; p = p.parent) {
         switch (p.node.type) {
+          case 'CatchClause':
           case 'ExportDeclaration':
             return;
-          case 'FunctionDeclaration':
-          case 'FunctionExpression':
-          case 'ArrowFunction':
-            if (
-              p.node.params.length == 0 ||
-              p.node.params[p.node.params.length - 1] !== path.node
-            ) {
+          case 'FormalParameter': {
+            let { params } = p.parent.node;
+            if (params[params.length - 1] !== p.node) {
               return;
             }
             break;
+          }
           case 'FunctionBody':
           case 'Module':
           case 'Script':
+          case 'ObjectPattern':
+          case 'ArrayPattern':
+          case 'CatchClause':
             break;
         }
       }
