@@ -178,6 +178,8 @@ class ParseResult {
     this.ast = results.ast;
     this.comments = results.comments;
     this.annotations = results.annotations;
+    this.location = results.location;
+    this.scopeTree = null;
   }
 
   locate(offset) {
@@ -203,12 +205,14 @@ export class Parser with Transform, Validate {
     this.context = new Context(null);
     this.comments = [];
     this.annotations = new Map();
+    this.location = options.location;
   }
 
   createParseResult(ast) {
     return new ParseResult({
       ast,
       input: this.input,
+      location: this.location,
       lineMap: this.scanner.lineMap,
       comments: this.comments,
       annotations: this.annotations,

@@ -317,6 +317,7 @@ export class ScopeResolver {
     this.pushScope('class', node);
     this.top.strict = true;
     this.visit(node.base);
+    this.visit(node.mixins);
     this.visit(node.body);
     this.popScope();
   }
@@ -326,6 +327,7 @@ export class ScopeResolver {
     this.top.strict = true;
     this.visit(node.identifier);
     this.visit(node.base);
+    this.visit(node.mixins);
     this.visit(node.body);
     this.popScope();
   }

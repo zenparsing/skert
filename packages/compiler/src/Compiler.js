@@ -18,8 +18,17 @@ class CompileResult {
 }
 
 export function compile(source, options = {}) {
-  let parseResult = parse(source, { module: options.module, resolveScopes: true });
+  let parseResult = parse(source, {
+    module: options.module,
+    resolveScopes: true,
+    location: options.location,
+  });
+
   let rootPath = Path.fromParseResult(parseResult);
+
+  if (options.validate) {
+    options.validate(rootPath, parseResult);
+  }
 
   let transforms = getTransforms({
     transformModules: options.transformModules,

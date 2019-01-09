@@ -1,4 +1,4 @@
-import { AST, resolveScopes } from './Parser.js';
+import { AST } from './Parser.js';
 
 export class Path {
 
@@ -124,7 +124,7 @@ export class Path {
 
   static fromParseResult(result) {
     let path = new Path(result.ast);
-    path.@scopeInfo = getScopeInfo(result);
+    path.@scopeInfo = getScopeInfo(result.scopeTree);
     return path;
   }
 
@@ -228,8 +228,7 @@ class ChangeRecord {
 
 }
 
-function getScopeInfo(parseResult) {
-  let scopeTree = resolveScopes(parseResult.ast, { lineMap: parseResult.lineMap });
+function getScopeInfo(scopeTree) {
   let names = new Set();
 
   function visit(scope) {

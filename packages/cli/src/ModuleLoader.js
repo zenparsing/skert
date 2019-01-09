@@ -32,14 +32,14 @@ class ModuleLoader {
 
 }
 
-export function registerLoader() {
-  startModuleTranslation();
+export function registerLoader(options) {
+  startModuleTranslation(options);
   return endModuleTranslation;
 }
 
 let originals = null;
 
-function startModuleTranslation() {
+function startModuleTranslation(options) {
   if (originals) {
     originals.refCount += 1;
     return;
@@ -51,7 +51,7 @@ function startModuleTranslation() {
     compile: Module.prototype._compile,
   };
 
-  Module.prototype._compile = compileOverride;
+  Module.prototype._compile = createCompileOverride(options);
   Error.prepareStackTrace = prepareStackTraceOverride;
 }
 
@@ -64,24 +64,27 @@ function endModuleTranslation() {
   }
 }
 
+function createCompileOverride(options = {}) {
+  return function compileOverride(content, filename) {
+    if (shouldTranslate(filename)) {
+      let result = compile(removeShebang(content), {
+        location: filename,
+        module: true,
+        transformModules: true,
+        validate: options.validate,
+      });
+      content = result.output;
+      if (result.mappings) {
+        translationMappings.set(filename, result.mappings);
+      }
+    }
+    return originals.compile.call(this, content, filename);
+  };
+}
+
 function shouldTranslate(filename) {
   // Don't translate files in node_modules
   return !/[/\\]node_modules[/\\]/i.test(filename);
-}
-
-function compileOverride(content, filename) {
-  if (shouldTranslate(filename)) {
-    let result = compile(removeShebang(content), {
-      location: filename,
-      module: true,
-      transformModules: true,
-    });
-    content = result.output;
-    if (result.mappings) {
-      translationMappings.set(filename, result.mappings);
-    }
-  }
-  return originals.compile.call(this, content, filename);
 }
 
 function removeShebang(content) {
