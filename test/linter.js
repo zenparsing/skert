@@ -31,6 +31,10 @@ function gatherUnusedDeclarations(scopeTree) {
   return unused;
 }
 
+function isUnbraced(node) {
+  return node && node.type !== 'Block';
+}
+
 exports.validate = function validate(rootPath, parseResult) {
   let { location, scopeTree, lineMap } = parseResult;
 
@@ -53,6 +57,16 @@ exports.validate = function validate(rootPath, parseResult) {
   let unused = gatherUnusedDeclarations(scopeTree);
 
   rootPath.visit(new class LintVisitor {
+
+    IfStatement(path) {
+      let { consequent, alternate } = path.node;
+
+      if (isUnbraced(consequent)) {
+        throw parseResult.createSyntaxError('Unbraced if statement', consequent.start, consequent.end);
+      } else if (isUnbraced(alternate) && alternate.type !== 'IfStatement') {
+        throw parseResult.createSyntaxError('Unbraced if statement', alternate.start, alternate.end);
+      }
+    }
 
     Identifier(path) {
       let { node } = path;

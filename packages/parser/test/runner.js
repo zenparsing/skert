@@ -216,8 +216,9 @@ export function runTests(options) {
       }
 
       // Print a group header
-      if (group !== currentGroup)
+      if (group !== currentGroup) {
         printHeader(currentGroup = group);
+      }
 
       let text = readFile(path);
       let programs = parseTestComments(text);

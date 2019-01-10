@@ -331,7 +331,7 @@ export class Scanner {
 
     while (code = this.peekCode()) {
       if (code >= low && code <= high) { this.offset++ }
-      else break;
+      else { break }
     }
 
     return this.input.slice(start, this.offset);
@@ -343,7 +343,7 @@ export class Scanner {
 
     while (code = this.peekCode()) {
       if (code >= 48 && code <= 57) { this.offset++ }
-      else break;
+      else { break }
     }
 
     return this.input.slice(start, this.offset);

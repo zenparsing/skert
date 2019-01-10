@@ -103,7 +103,9 @@ export class Path {
 
     for (let i = 0; true; ++i) {
       let value = baseName;
-      if (i > 0) value += '_' + i;
+      if (i > 0) {
+        value += '_' + i;
+      }
       if (!scopeInfo.names.has(value)) {
         ident = value;
         break;
