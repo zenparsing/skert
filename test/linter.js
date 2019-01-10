@@ -15,7 +15,9 @@ function isGlobalName(name) {
   }
 }
 
-exports.validate = function validate(rootPath, { scopeTree, lineMap, location }) {
+exports.validate = function validate(rootPath, parseResult) {
+  let { location, scopeTree, lineMap } = parseResult;
+
   function where(node) {
     let { line, column } = lineMap.locate(node.start);
     return `(${ location }:${ line + 1 }:${ column + 1 })`;
@@ -36,14 +38,20 @@ exports.validate = function validate(rootPath, { scopeTree, lineMap, location })
 
   for (let free of scopeTree.free) {
     if (!isGlobalName(free.value)) {
-      throw new Error(`Undeclared variable '${ free.value }' ${ where(free) }`);
+      throw parseResult.createSyntaxError(
+        `Undeclared variable '${ free.value }'`,
+        free.start,
+        free.end
+      );
     }
   }
 
   rootPath.visit(new class LintVisitor {
 
     Identifier(path) {
-      if (!unused.has(path.node)) {
+      let { node } = path;
+
+      if (!unused.has(node)) {
         return;
       }
 
@@ -70,7 +78,11 @@ exports.validate = function validate(rootPath, { scopeTree, lineMap, location })
         }
       }
 
-      throw new Error(`Unused declaration '${ path.node.value }' ${ where(path.node) }`);
+      throw parseResult.createSyntaxError(
+        `Unused declaration '${ path.node.value }'`,
+        node.start,
+        node.end
+      );
     }
 
   });

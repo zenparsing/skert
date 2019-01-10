@@ -2,6 +2,7 @@ import * as AST from './AST.js';
 import { Scanner } from './Scanner.js';
 import { Transform } from './Transform.js';
 import { Validate } from './Validate.js';
+import { ParseError, createSyntaxError } from './ParseError.js';
 
 // Returns true if the specified operator is an increment operator
 function isIncrement(op) {
@@ -182,16 +183,22 @@ class ParseResult {
     this.scopeTree = null;
   }
 
+  createSyntaxError(msg, startOffset, endOffset) {
+    return createSyntaxError(msg, {
+      lineMap: this.lineMap,
+      location: this.location,
+      startOffset,
+      endOffset,
+    });
+  }
+
 }
 
 export class Parser with Transform, Validate {
 
-  constructor(input, options) {
-    options = options || {};
-
+  constructor(input, options = {}) {
     let scanner = new Scanner(input, options.offset);
 
-    this.onASI = options.onASI || null;
     this.scanner = scanner;
     this.input = input;
     this.peek0 = null;
@@ -201,7 +208,7 @@ export class Parser with Transform, Validate {
     this.context = new Context(null);
     this.comments = [];
     this.annotations = new Map();
-    this.location = options.location;
+    this.location = options.location || '';
   }
 
   createParseResult(ast) {
@@ -213,6 +220,19 @@ export class Parser with Transform, Validate {
       comments: this.comments,
       annotations: this.annotations,
     });
+  }
+
+  createSyntaxError(msg, startOffset, endOffset) {
+    return createSyntaxError(msg, {
+      lineMap: this.scanner.lineMap,
+      location: this.location,
+      startOffset,
+      endOffset,
+    });
+  }
+
+  locate(offset) {
+    return this.scanner.lineMap.locate(offset);
   }
 
   parseModule() {
@@ -441,9 +461,7 @@ export class Parser with Transform, Validate {
 
   unexpected(token) {
     let type = token.type;
-    let msg;
-
-    msg = type === 'EOF' ?
+    let msg = type === 'EOF' ?
       'Unexpected end of input' :
       'Unexpected token ' + token.type;
 
@@ -451,20 +469,7 @@ export class Parser with Transform, Validate {
   }
 
   fail(msg, node) {
-    if (!node) {
-      node = this.peekToken();
-    }
-
-    let loc = this.scanner.lineMap.locate(node.start);
-    let err = new SyntaxError(msg);
-
-    err.line = loc.line;
-    err.column = loc.column;
-    err.lineOffset = loc.lineOffset;
-    err.startOffset = node.start;
-    err.endOffset = node.end;
-
-    throw err;
+    throw new ParseError(msg, node || this.peekToken());
   }
 
   unwrapParens(node) {
@@ -1474,17 +1479,8 @@ export class Parser with Transform, Validate {
     let type = token.type;
 
     if (type === ';') {
-
       this.read();
-
-    } else if (type === '}' || type === 'EOF' || token.newlineBefore) {
-
-      if (this.onASI && !this.onASI(token)) {
-        this.unexpected(token);
-      }
-
-    } else {
-
+    } else if (type !== '}' && type !== 'EOF' && !token.newlineBefore) {
       this.unexpected(token);
     }
   }

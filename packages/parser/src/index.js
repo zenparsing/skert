@@ -11,13 +11,25 @@ function print(ast, options) {
 
 function parse(input, options = {}) {
   let parser = new Parser(input, options);
-  let result = options.module ? parser.parseModule() : parser.parseScript();
-  if (options.resolveScopes) {
-    result.scopeTree = resolveScopes(result.ast, { lineMap: result.lineMap });
+  try {
+    let result = options.module ? parser.parseModule() : parser.parseScript();
+    if (options.resolveScopes) {
+      result.scopeTree = resolveScopes(result.ast);
+    }
+    return result;
+  } catch (err) {
+    throw err.name === 'ParseError'
+      ? parser.createSyntaxError(err.message, err.startOffset, err.endOffset)
+      : err;
   }
-  return result;
 }
 
-function resolveScopes(ast, options) {
-  return new ScopeResolver().resolve(ast, options);
+function resolveScopes(ast, parseResult) {
+  try {
+    return new ScopeResolver().resolve(ast);
+  } catch (err) {
+    throw err.name === 'ParseError' && parseResult
+      ? parseResult.createSyntaxError(err.message, err.startOffset, err.endOffset)
+      : err;
+  }
 }

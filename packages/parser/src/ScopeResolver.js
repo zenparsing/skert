@@ -1,4 +1,5 @@
 import { forEachChild } from './AST.js';
+import { ParseError } from './ParseError.js';
 
 class Scope {
 
@@ -27,11 +28,10 @@ export class ScopeResolver {
   constructor() {
     this.stack = [];
     this.top = null;
-    this.lineMap = null;
+    this.parseResult = null;
   }
 
-  resolve(ast, options = {}) {
-    this.lineMap = options.lineMap;
+  resolve(ast) {
     this.top = new Scope('var', false, ast);
     this.visit(ast);
     this.flushFree();
@@ -40,18 +40,7 @@ export class ScopeResolver {
   }
 
   fail(msg, node) {
-    let err = new SyntaxError(msg);
-
-    if (this.lineMap) {
-      let loc = this.lineMap.locate(node.start);
-      err.line = loc.line;
-      err.column = loc.column;
-      err.lineOffset = loc.lineOffset;
-      err.startOffset = node.start;
-      err.endOffset = node.end;
-    }
-
-    throw err;
+    throw new ParseError(msg, node);
   }
 
   pushScope(type, node) {
