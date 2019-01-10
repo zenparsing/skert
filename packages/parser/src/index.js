@@ -19,7 +19,7 @@ function parse(input, options = {}) {
     return result;
   } catch (err) {
     throw err.name === 'ParseError'
-      ? parser.createSyntaxError(err.message, err.startOffset, err.endOffset)
+      ? parser.createSyntaxError(err.message, err.span)
       : err;
   }
 }
@@ -29,7 +29,7 @@ function resolveScopes(ast, parseResult) {
     return new ScopeResolver().resolve(ast);
   } catch (err) {
     throw err.name === 'ParseError' && parseResult
-      ? parseResult.createSyntaxError(err.message, err.startOffset, err.endOffset)
+      ? parseResult.createSyntaxError(err.message, err.span)
       : err;
   }
 }

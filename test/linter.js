@@ -40,17 +40,16 @@ exports.validate = function validate(rootPath, parseResult) {
 
   for (let entry of parseResult.asi || []) {
     if (entry.type !== '}') {
-      throw parseResult.createSyntaxError('Invalid ASI', entry.offset, entry.offset);
+      throw parseResult.createSyntaxError('Invalid ASI', {
+        start: entry.offset,
+        end: entry.offset,
+      });
     }
   }
 
   for (let free of scopeTree.free) {
     if (!isGlobalName(free.value)) {
-      throw parseResult.createSyntaxError(
-        `Undeclared variable '${ free.value }'`,
-        free.start,
-        free.end
-      );
+      throw parseResult.createSyntaxError(`Undeclared variable '${ free.value }'`, free);
     }
   }
 
@@ -62,9 +61,9 @@ exports.validate = function validate(rootPath, parseResult) {
       let { consequent, alternate } = path.node;
 
       if (isUnbraced(consequent)) {
-        throw parseResult.createSyntaxError('Unbraced if statement', consequent.start, consequent.end);
+        throw parseResult.createSyntaxError('Unbraced if statement', consequent);
       } else if (isUnbraced(alternate) && alternate.type !== 'IfStatement') {
-        throw parseResult.createSyntaxError('Unbraced if statement', alternate.start, alternate.end);
+        throw parseResult.createSyntaxError('Unbraced if statement', alternate);
       }
     }
 
@@ -99,8 +98,7 @@ exports.validate = function validate(rootPath, parseResult) {
 
       throw parseResult.createSyntaxError(
         `Unused declaration '${ path.node.value }'`,
-        node.start,
-        node.end
+        node
       );
     }
 

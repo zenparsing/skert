@@ -184,12 +184,12 @@ class ParseResult {
     this.scopeTree = null;
   }
 
-  createSyntaxError(msg, startOffset, endOffset) {
+  createSyntaxError(msg, span) {
     return createSyntaxError(msg, {
       lineMap: this.lineMap,
       location: this.location,
-      startOffset,
-      endOffset,
+      startOffset: span.start,
+      endOffset: span.end,
     });
   }
 
@@ -225,12 +225,12 @@ export class Parser with Transform, Validate {
     });
   }
 
-  createSyntaxError(msg, startOffset, endOffset) {
+  createSyntaxError(msg, span) {
     return createSyntaxError(msg, {
       lineMap: this.scanner.lineMap,
       location: this.location,
-      startOffset,
-      endOffset,
+      startOffset: span.start,
+      endOffset: span.end,
     });
   }
 

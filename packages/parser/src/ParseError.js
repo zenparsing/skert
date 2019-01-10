@@ -2,8 +2,7 @@ export class ParseError extends Error {
   constructor(msg, span) {
     super(msg);
     this.name = 'ParseError';
-    this.startOffset = span.start;
-    this.endOffset = span.end;
+    this.span = span;
   }
 }
 
