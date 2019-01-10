@@ -13,7 +13,7 @@ test.withContext('symbol names are added to context', `
   x.@y = 1;
 `, `
   x[$y] = 1;
-`)
+`);
 
 test('symbol named methods', `
   ({ @x() {} });

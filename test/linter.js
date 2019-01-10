@@ -15,18 +15,11 @@ function isGlobalName(name) {
   }
 }
 
-exports.validate = function validate(rootPath, parseResult) {
-  let { location, scopeTree, lineMap } = parseResult;
-
-  function where(node) {
-    let { line, column } = lineMap.locate(node.start);
-    return `(${ location }:${ line + 1 }:${ column + 1 })`;
-  }
-
+function gatherUnusedDeclarations(scopeTree) {
   let unused = new Set();
 
-  function gatherUnused(scope) {
-    scope.children.forEach(gatherUnused);
+  function visit(scope) {
+    scope.children.forEach(visit);
     for (let [key, value] of scope.names) {
       if (value.references.length === 0) {
         unused.add(value.declarations[0]);
@@ -34,7 +27,18 @@ exports.validate = function validate(rootPath, parseResult) {
     }
   }
 
-  gatherUnused(scopeTree);
+  visit(scopeTree);
+  return unused;
+}
+
+exports.validate = function validate(rootPath, parseResult) {
+  let { location, scopeTree, lineMap } = parseResult;
+
+  for (let entry of parseResult.asi || []) {
+    if (entry.type !== '}') {
+      throw parseResult.createSyntaxError('Invalid ASI', entry.offset, entry.offset);
+    }
+  }
 
   for (let free of scopeTree.free) {
     if (!isGlobalName(free.value)) {
@@ -46,11 +50,12 @@ exports.validate = function validate(rootPath, parseResult) {
     }
   }
 
+  let unused = gatherUnusedDeclarations(scopeTree);
+
   rootPath.visit(new class LintVisitor {
 
     Identifier(path) {
       let { node } = path;
-
       if (!unused.has(node)) {
         return;
       }

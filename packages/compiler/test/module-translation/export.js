@@ -117,7 +117,7 @@ test('export default expression', `
     x: 1,
     y: 2
   };
-`)
+`);
 
 test('export function', `
   export function f() {}
