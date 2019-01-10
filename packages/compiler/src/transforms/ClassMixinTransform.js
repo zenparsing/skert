@@ -34,16 +34,11 @@ export function registerTransform({ define, context, templates, AST }) {
         kind: 'const',
         initializer: templates.expression`
           (target, ...sources) => {
-            function copy(from, to, skip) {
+            function copy(from, to) {
               for (let key of Reflect.ownKeys(from)) {
-                if (key === skip || Reflect.getOwnPropertyDescriptor(to, key)) {
-                  continue;
+                if (!Reflect.getOwnPropertyDescriptor(to, key)) {
+                  Reflect.defineProperty(to, key, Reflect.getOwnPropertyDescriptor(from, key));
                 }
-                Reflect.defineProperty(
-                  to,
-                  key,
-                  Reflect.getOwnPropertyDescriptor(from, key)
-                );
               }
             }
 
@@ -61,9 +56,9 @@ export function registerTransform({ define, context, templates, AST }) {
                 throw new TypeError('Invalid mixin source');
               }
 
-              copy(source, target, 'prototype');
+              copy(source, target);
               if (source.prototype) {
-                copy(source.prototype, target.prototype, 'constructor');
+                copy(source.prototype, target.prototype);
               }
             }
 
@@ -110,17 +105,6 @@ export function registerTransform({ define, context, templates, AST }) {
       ));
     }
 
-    MemberExpression(path) {
-      let { object, property } = path.node;
-
-      if (
-        object.type === 'Identifier' && object.value === 'Symbol' &&
-        property.type === 'Identifier' && property.value === 'mixin'
-      ) {
-        path.replaceNode(new AST.Identifier(this.insertSymbol()));
-      }
-    }
-
     ClassExpression(path) {
       path.visitChildren(this);
 
@@ -130,11 +114,27 @@ export function registerTransform({ define, context, templates, AST }) {
       }
 
       let helper = this.insertHelper();
-
-      path.replaceNode(new AST.CallExpression(
+      let replaced = new AST.CallExpression(
         new AST.Identifier(helper),
         [path.node, ...mixins]
-      ));
+      );
+
+      if (path.parentNode.type === 'NewExpression') {
+        replaced = new AST.ParenExpression(replaced);
+      }
+
+      path.replaceNode(replaced);
+    }
+
+    MemberExpression(path) {
+      let { object, property } = path.node;
+
+      if (
+        object.type === 'Identifier' && object.value === 'Symbol' &&
+        property.type === 'Identifier' && property.value === 'mixin'
+      ) {
+        path.replaceNode(new AST.Identifier(this.insertSymbol()));
+      }
     }
 
   }));

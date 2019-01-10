@@ -7,12 +7,11 @@ test.withContext('class declaration with mixin', `
 `, `
   const _mixin = Symbol.mixin || Symbol.for('Symbol.mixin');
   const _classMixin = (target, ...sources) => {
-    function copy(from, to, skip) {
+    function copy(from, to) {
       for (let key of Reflect.ownKeys(from)) {
-        if (key === skip || Reflect.getOwnPropertyDescriptor(to, key)) {
-          continue;
+        if (!Reflect.getOwnPropertyDescriptor(to, key)) {
+          Reflect.defineProperty(to, key, Reflect.getOwnPropertyDescriptor(from, key));
         }
-        Reflect.defineProperty(to, key, Reflect.getOwnPropertyDescriptor(from, key));
       }
     }
 
@@ -28,9 +27,9 @@ test.withContext('class declaration with mixin', `
       if (typeof source !== 'function') {
         throw new TypeError('Invalid mixin source');
       }
-      copy(source, target, 'prototype');
+      copy(source, target);
       if (source.prototype) {
-        copy(source.prototype, target.prototype, 'constructor');
+        copy(source.prototype, target.prototype);
       }
     }
     return target;
@@ -70,3 +69,27 @@ test.withContext('exported default named class', `
 
   _classMixin(A, B);
 `);
+
+test.withContext('new expression mixin', `
+  new class A with B {}
+`, `
+  new (_classMixin(class A {}, B));
+`);
+
+test.run('default mixins are correctly applied', `
+  class A { x() { return 'Ax' } static y() { return 'Ay' } }
+  class B { x() { return 'Bx' } z() { return 'Bz' } }
+  class C with A, B {}
+  let c = new C();
+  value = [c.x(), C.y(), c.z()];
+`, [
+  'Ax', 'Ay', 'Bz'
+]);
+
+test.run('Symbol.mixin', `
+  const mixin = {
+    [Symbol.mixin](target) { target.foo = 42 }
+  };
+  class A with mixin {}
+  value = A.foo;
+`, 42);

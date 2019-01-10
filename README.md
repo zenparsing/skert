@@ -139,8 +139,8 @@ class C with A, B {}
 
 const c = new C();
 
-c.a(); // 1
-c.b(); // 2
+c.a(); // 'a'
+c.b(); // 'b'
 ```
 
 ## Install

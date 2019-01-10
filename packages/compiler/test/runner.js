@@ -32,7 +32,7 @@ export function createRunner(options) {
     if (expected !== actual) {
       console.log(actual);
     }
-    assert.equal(actual, expected, name);
+    assert.deepStrictEqual(actual, expected, name);
   };
 
   return test;
