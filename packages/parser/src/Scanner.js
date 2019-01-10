@@ -615,6 +615,15 @@ export class Scanner {
       } else {
         val += chr;
         this.offset++;
+
+        // Treat /r/n as a single newline
+        if (chr === '\r' && this.peekCode() === 10) {
+          chr = this.readChar();
+        }
+
+        if (chr === '\n') {
+          this.lineMap.addBreak(this.offset);
+        }
       }
     }
 
