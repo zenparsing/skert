@@ -182,10 +182,6 @@ class ParseResult {
     this.scopeTree = null;
   }
 
-  locate(offset) {
-    return this.lineMap.locate(offset);
-  }
-
 }
 
 export class Parser with Transform, Validate {
