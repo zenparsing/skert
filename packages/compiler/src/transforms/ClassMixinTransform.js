@@ -61,6 +61,7 @@ export function registerTransform({ define, context, templates, AST }) {
                 throw new TypeError('Invalid mixin source');
               }
 
+              copy(source, target, 'prototype');
               if (source.prototype) {
                 copy(source.prototype, target.prototype, 'constructor');
               }

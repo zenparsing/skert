@@ -28,6 +28,7 @@ test.withContext('class declaration with mixin', `
       if (typeof source !== 'function') {
         throw new TypeError('Invalid mixin source');
       }
+      copy(source, target, 'prototype');
       if (source.prototype) {
         copy(source.prototype, target.prototype, 'constructor');
       }
