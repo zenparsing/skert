@@ -49,9 +49,11 @@ exports.validate = function validate(rootPath, { scopeTree, lineMap, location })
 
       for (let p = path.parent; p; p = p.parent) {
         switch (p.node.type) {
+          // Unused variables can appear in catch clauses or as exported names
           case 'CatchClause':
           case 'ExportDeclaration':
             return;
+          // Unused variables can appear as intermediate parameter values
           case 'FormalParameter': {
             let { params } = p.parent.node;
             if (params[params.length - 1] !== p.node) {
@@ -64,7 +66,6 @@ exports.validate = function validate(rootPath, { scopeTree, lineMap, location })
           case 'Script':
           case 'ObjectPattern':
           case 'ArrayPattern':
-          case 'CatchClause':
             break;
         }
       }
