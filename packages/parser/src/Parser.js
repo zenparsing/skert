@@ -175,11 +175,12 @@ class ParseResult {
 
   constructor(results) {
     this.input = results.input;
+    this.location = results.location;
     this.lineMap = results.lineMap;
     this.ast = results.ast;
     this.comments = results.comments;
     this.annotations = results.annotations;
-    this.location = results.location;
+    this.asi = results.asi;
     this.scopeTree = null;
   }
 
@@ -208,6 +209,7 @@ export class Parser with Transform, Validate {
     this.context = new Context(null);
     this.comments = [];
     this.annotations = new Map();
+    this.asi = [];
     this.location = options.location || '';
   }
 
@@ -219,6 +221,7 @@ export class Parser with Transform, Validate {
       lineMap: this.scanner.lineMap,
       comments: this.comments,
       annotations: this.annotations,
+      asi: this.asi,
     });
   }
 
@@ -1480,7 +1483,11 @@ export class Parser with Transform, Validate {
 
     if (type === ';') {
       this.read();
-    } else if (type !== '}' && type !== 'EOF' && !token.newlineBefore) {
+    } else if (type === '}' || type === 'EOF') {
+      this.asi.push({ type: token.type, offset: token.start });
+    } else if (token.newlineBefore) {
+      this.asi.push({ type: 'newline', offset: token.start })
+    } else {
       this.unexpected(token);
     }
   }
