@@ -2,6 +2,8 @@ import * as lib from './FileTranslator.js';
 import * as fs from 'fs';
 import * as path from 'path';
 
+const flags = new Set(['--script', '--cjs']);
+
 function parseArgs(argv) {
   let list = [];
   let map = new Map();
@@ -9,7 +11,12 @@ function parseArgs(argv) {
 
   for (let part of argv) {
     if (part.startsWith('-')) {
-      map.set(key = part, undefined);
+      if (flags.has(part)) {
+        map.set(part, true);
+        key = null;
+      } else {
+        map.set(key = part, undefined);
+      }
     } else if (key) {
       map.set(key, part);
       key = null;
@@ -23,7 +30,7 @@ function parseArgs(argv) {
 }
 
 class CliError extends Error {
-  get name() { return this.constructor.name }
+  toString() { return `ERROR: ${ this.message }` }
 }
 
 export async function main(argv = process.argv.slice(2)) {
