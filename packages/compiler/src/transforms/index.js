@@ -1,4 +1,3 @@
-import * as AsyncBlockTransform from './AsyncBlockTransform.js';
 import * as SymbolNameTransform from './SymbolNameTransform.js';
 import * as MethodExtractionTransform from './MethodExtractionTransform.js';
 import * as CallWithTransform from './CallWithTransform.js';
@@ -9,7 +8,6 @@ import * as ModuleTransform from './ModuleTransform.js';
 
 export function getTransforms(options = {}) {
   let list = [
-    AsyncBlockTransform,
     SymbolNameTransform,
     MethodExtractionTransform,
     CallWithTransform,

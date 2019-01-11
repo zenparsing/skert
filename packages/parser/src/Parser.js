@@ -1404,23 +1404,6 @@ export class Parser with Transform, Validate {
     return this.node(new AST.TemplateExpression(parts), start);
   }
 
-  AsyncBlock() {
-    let start = this.nodeStart();
-    this.read();
-
-    this.pushContext();
-    this.context.isAsync = true;
-    this.context.functionBody = true;
-
-    this.read('{');
-    let statements = this.StatementList(true);
-    this.read('}');
-
-    this.popContext();
-
-    return this.node(new AST.AsyncBlock(statements), start);
-  }
-
   // === Statements ===
 
   Statement(label) {
@@ -2010,9 +1993,8 @@ export class Parser with Transform, Validate {
           return this.LexicalDeclaration();
         }
 
-        switch (this.peekAsync()) {
-          case 'function': return this.FunctionDeclaration();
-          case '{': return this.AsyncBlock();
+        if (this.peekAsync() === 'function') {
+          return this.FunctionDeclaration();
         }
 
         break;
