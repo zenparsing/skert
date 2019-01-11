@@ -58,6 +58,32 @@ export function registerTransform({ define, templates, AST }) {
       }
     }
 
+    hasTopLevelAwait() {
+      let topLevelFound = {};
+
+      try {
+
+        this.rootPath.visit({
+          FunctionBody() {},
+          ArrowFunction() {},
+          UnaryExpression(path) {
+            if (path.node.operator === 'await') {
+              throw topLevelFound;
+            }
+            path.visitChildren(this);
+          },
+        });
+
+      } catch (err) {
+        if (err === topLevelFound) {
+          return true;
+        }
+        throw err;
+      }
+
+      return false;
+    }
+
     Module(node) {
       let moduleScope = resolveScopes(node).children[0];
       let replaceMap = new Map();
@@ -176,6 +202,7 @@ export function registerTransform({ define, templates, AST }) {
       node.statements = statements;
 
       rootPath.visit({
+
         Identifier(path) {
           let expr = replaceMap.get(path.node);
           if (!expr) {
@@ -232,9 +259,27 @@ export function registerTransform({ define, templates, AST }) {
           }
           path.replaceNode(new AST.Identifier(this.metaName));
         },
+
       });
 
       rootPath.applyChanges();
+
+      if (this.hasTopLevelAwait()) {
+        if (this.exports.length > 0) {
+          throw new Error('Module with top-level await cannot have exports');
+        }
+
+        let fn = new AST.FunctionExpression(
+          'async',
+          null,
+          [],
+          new AST.FunctionBody(node.statements)
+        );
+
+        node.statements = templates.statementList`
+          (${ fn })().catch(err => setTimeout(() => { throw err; }, 0));
+        `;
+      }
 
       node.statements.unshift(new AST.Directive(
         'use strict',

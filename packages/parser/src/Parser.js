@@ -413,7 +413,7 @@ export class Parser with Transform, Validate {
       }
 
       if (this.isModule) {
-        this.fail('Await is reserved within modules');
+        return true;
       }
     }
 

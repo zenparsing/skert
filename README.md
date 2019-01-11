@@ -15,6 +15,18 @@ SkertJS reimagines the future of JavaScript with simple features that address co
 
 ## Features
 
+### Top-Level Await
+
+Top-level await allows the programmer to use use `await` expressions from the top level of a module body.
+
+```js
+let response = await fetch(url);
+let text = await response.text();
+console.log(text);
+```
+
+*NOTE: Currently, top-level await is not supported in modules with export declarations.*
+
 ### Call-With Operator
 
 The call-with binary operator (`->`) allows the programmer to call a function as if it were a method.

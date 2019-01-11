@@ -250,10 +250,30 @@
        expression: { type: 'NumberLiteral', start: 15, end: 16, value: 2 } } ] },
 
 /*** await (1); ***/
-'await is reserved within modules - 1': {},
+'await can be used in module bodies':
+{ type: 'Module',
+  statements:
+   [ { type: 'ExpressionStatement',
+       expression:
+        { type: 'UnaryExpression',
+          operator: 'await',
+          expression:
+           { type: 'ParenExpression',
+             expression: { type: 'NumberLiteral', value: 1 } } } } ] },
 
 /*** { await (1); } ***/
-'await is reserved within modules - 2': {},
+'await is reserved within modules - 2':
+{ type: 'Module',
+  statements:
+   [ { type: 'Block',
+       statements:
+        [ { type: 'ExpressionStatement',
+            expression:
+             { type: 'UnaryExpression',
+               operator: 'await',
+               expression:
+                { type: 'ParenExpression',
+                  expression: { type: 'NumberLiteral', value: 1 } } } } ] } ] },
 
 /** await (1) **/
 'await is not reserved in scripts':
