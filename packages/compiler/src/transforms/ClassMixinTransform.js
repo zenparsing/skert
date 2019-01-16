@@ -3,32 +3,12 @@ export function registerTransform({ define, context, templates, AST }) {
 
     constructor() {
       this.helperName = context.get('classMixinHelper') || '';
-      this.symbolName = context.get('classMixinSymbol') || '';
-    }
-
-    insertSymbol() {
-      if (this.symbolName) {
-        return this.symbolName;
-      }
-
-      this.symbolName = rootPath.uniqueIdentifier('_mixin', {
-        kind: 'const',
-        initializer: templates.expression`
-          Symbol.mixin || Symbol.for('Symbol.mixin')
-        `,
-      });
-
-      context.set('classMixinSymbol', this.symbolName);
-
-      return this.symbolName;
     }
 
     insertHelper() {
       if (this.helperName) {
         return this.helperName;
       }
-
-      this.insertSymbol();
 
       this.helperName = rootPath.uniqueIdentifier('_classMixin', {
         kind: 'const',
@@ -43,15 +23,6 @@ export function registerTransform({ define, context, templates, AST }) {
             }
 
             for (let source of sources) {
-              let m = source[${ this.symbolName }];
-              if (m !== undefined) {
-                if (typeof m !== 'function') {
-                  throw new TypeError('Expected Symbol.mixin method to be a function');
-                }
-                m.call(source, target);
-                continue;
-              }
-
               if (typeof source !== 'function') {
                 throw new TypeError('Invalid mixin source');
               }
@@ -124,17 +95,6 @@ export function registerTransform({ define, context, templates, AST }) {
       }
 
       path.replaceNode(replaced);
-    }
-
-    MemberExpression(path) {
-      let { object, property } = path.node;
-
-      if (
-        object.type === 'Identifier' && object.value === 'Symbol' &&
-        property.type === 'Identifier' && property.value === 'mixin'
-      ) {
-        path.replaceNode(new AST.Identifier(this.insertSymbol()));
-      }
     }
 
   }));
