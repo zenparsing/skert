@@ -29,10 +29,12 @@ export function createRunner(options) {
   test.run = function(name, input, expected) {
     let { output } = compile('let value;\n' + input, options);
     let actual = new Function(output + '\nreturn value;')();
-    if (expected !== actual) {
+    try {
+      assert.deepStrictEqual(actual, expected, name);
+    } catch (err) {
       console.log(actual);
+      throw err;
     }
-    assert.deepStrictEqual(actual, expected, name);
   };
 
   return test;
