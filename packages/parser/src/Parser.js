@@ -2245,6 +2245,9 @@ export class Parser with Transform, Validate {
     let ident = null;
     let base = null;
 
+    this.pushContext(true);
+    this.setStrict(true);
+
     this.read('class');
 
     ident = this.BindingIdentifier();
@@ -2261,24 +2264,16 @@ export class Parser with Transform, Validate {
       mixins = this.ClassMixinList();
     }
 
+    let body = this.ClassBody(kind);
+
+    this.popContext();
+
     return this.node(new AST.ClassDeclaration(
       ident,
       base,
       mixins,
-      this.ClassBody(kind)
+      body
     ), start);
-  }
-
-  ClassMixinList() {
-    let list = [];
-
-    while (true) {
-      list.push(this.MemberExpression(true));
-      if (this.peek() === ',') { this.read() }
-      else { break }
-    }
-
-    return list;
   }
 
   ClassExpression() {
@@ -2286,6 +2281,9 @@ export class Parser with Transform, Validate {
     let kind = 'base';
     let ident = null;
     let base = null;
+
+    this.pushContext(true);
+    this.setStrict(true);
 
     this.read('class');
 
@@ -2305,12 +2303,28 @@ export class Parser with Transform, Validate {
       mixins = this.ClassMixinList();
     }
 
+    let body = this.ClassBody(kind);
+
+    this.popContext();
+
     return this.node(new AST.ClassExpression(
       ident,
       base,
       mixins,
-      this.ClassBody(kind)
+      body
     ), start);
+  }
+
+  ClassMixinList() {
+    let list = [];
+
+    while (true) {
+      list.push(this.MemberExpression(true));
+      if (this.peek() === ',') { this.read() }
+      else { break }
+    }
+
+    return list;
   }
 
   ClassBody(classKind) {
@@ -2318,8 +2332,6 @@ export class Parser with Transform, Validate {
     let hasConstructor = false;
     let list = [];
 
-    this.pushContext(true);
-    this.setStrict(true);
     this.read('{');
 
     while (this.peekUntil('}', 'name')) {
@@ -2345,7 +2357,6 @@ export class Parser with Transform, Validate {
     }
 
     this.read('}');
-    this.popContext();
 
     return this.node(new AST.ClassBody(list), start);
   }

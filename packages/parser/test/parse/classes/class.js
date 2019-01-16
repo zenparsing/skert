@@ -694,4 +694,10 @@
                                params: [],
                                body: { type: 'FunctionBody', start: 38, end: 40, statements: [] } } ] } } ] } } ] } } ] },
 
+/** class package {} **/
+'binding identifier is strict mode': {},
+
+/** class C extends package {} **/
+'extends clause is strict mode': {},
+
 })
