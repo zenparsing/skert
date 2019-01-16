@@ -7,3 +7,4 @@ import './call-with/call-with.js';
 import './null-coalescing/null-coalescing.js';
 import './annotations/annotations.js';
 import './class-mixins/class-mixins.js';
+import './class-initializers/class-initializers.js';

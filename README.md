@@ -143,6 +143,18 @@ c.a(); // 'a'
 c.b(); // 'b'
 ```
 
+### Class Initializer Blocks
+
+Class initializer blocks allow the programmer to execute code when a class is defined.
+
+```js
+class Widget extends HTMLElement {
+  static {
+    window.customElements.define('acme-widget', this);
+  }
+}
+```
+
 ## Install
 
 ```

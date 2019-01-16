@@ -2367,6 +2367,8 @@ export class Parser with Transform, Validate {
 
     if (token.type === 'IDENTIFIER' && token.value === 'static') {
       switch (this.peekAt('name', 1)) {
+        case '{':
+          return this.ClassInitializer();
         case 'IDENTIFIER':
         case '[':
           this.read();
@@ -2420,6 +2422,17 @@ export class Parser with Transform, Validate {
     this.Semicolon();
 
     return this.node(new AST.ClassField(false, name, init), name.start);
+  }
+
+  ClassInitializer() {
+    let start = this.nodeStart();
+    this.read();
+
+    this.read('{');
+    let statements = this.StatementList(true);
+    this.read('}');
+
+    return this.node(new AST.ClassInitializer(statements), start);
   }
 
   // === Modules ===

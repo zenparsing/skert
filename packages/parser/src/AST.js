@@ -611,6 +611,13 @@ export function ClassField(isStatic, name, initializer) {
   this.initializer = initializer;
 }
 
+export function ClassInitializer(statements) {
+  this.type = 'ClassInitializer';
+  this.start = -1;
+  this.end = -1;
+  this.statements = statements;
+}
+
 export function ImportCall(argument) {
   this.type = 'ImportCall';
   this.start = -1;

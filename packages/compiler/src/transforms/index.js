@@ -3,6 +3,7 @@ import * as MethodExtractionTransform from './MethodExtractionTransform.js';
 import * as CallWithTransform from './CallWithTransform.js';
 import * as NullCoalescingTransform from './NullCoalescingTransform.js';
 import * as AnnotationTransform from './AnnotationTransform.js';
+import * as ClassInitializerTransform from './ClassInitializerTransform.js';
 import * as ClassMixinTransform from './ClassMixinTransform.js';
 import * as ModuleTransform from './ModuleTransform.js';
 
@@ -13,6 +14,7 @@ export function getTransforms(options = {}) {
     CallWithTransform,
     NullCoalescingTransform,
     AnnotationTransform,
+    ClassInitializerTransform,
     ClassMixinTransform,
   ];
 
