@@ -84,43 +84,9 @@ console.log(obj.@foo); // 1
 console.log(Reflect.ownKeys(obj)); // [Symbol('@foo')]
 ```
 
-### Annotations
+### Build-Time Macros
 
-Annotations allow the programmer to attach metadata to various language constructs.
-
-Classes:
-
-```js
-#[deprecated]
-class C {}
-```
-
-Functions:
-
-```js
-#[deprecated]
-function f() {}
-```
-
-Class Members:
-
-```js
-class C {
-  #[deprecated]
-  oldMethod() {}
-}
-
-```
-
-Properties:
-
-```js
-const obj = {
-  #[deprecated] name: 'Bob'
-};
-```
-
-*SkertJS currently discards annotations, but we plan on exposing them at runtime using a reflection API.*
+*Coming Soon*
 
 ### Class Mixins
 
