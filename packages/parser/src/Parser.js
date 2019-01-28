@@ -2782,7 +2782,7 @@ export class Parser with Transform, Validate {
     this.read('[');
 
     while (this.peekUntil(']')) {
-      list.push(this.Expression());
+      list.push(this.AnnotationExpression());
       if (this.peek() === ',') { this.read() }
       else { break }
     }
@@ -2790,6 +2790,31 @@ export class Parser with Transform, Validate {
     this.read(']');
 
     return this.node(new AST.Annotation(list), start);
+  }
+
+  AnnotationExpression() {
+    let start = this.nodeStart();
+    let expr = this.Identifier(true);
+
+    while (this.peek() === '.') {
+      this.read();
+      let prop = this.IdentifierName();
+      expr = this.node(new AST.MemberExpression(expr, prop), start);
+    }
+
+    if (this.peek() === ')') {
+      this.read();
+      let args = this.ArgumentList();
+      let trailingComma = false;
+      if (this.peek() === ',') {
+        this.read();
+        trailingComma = true;
+      }
+      this.read(')');
+      expr = this.node(new AST.CallExpression(expr, args, trailingComma), start);
+    }
+
+    return expr;
   }
 
 }
