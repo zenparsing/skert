@@ -64,6 +64,13 @@ function endModuleTranslation() {
   }
 }
 
+function createRequire(location) {
+  module = new Module(location, null);
+  module.filename = location;
+  module.paths = Module._nodeModulePaths(path.dirname(location));
+  return module.require.bind(module);
+}
+
 function createCompileOverride(options = {}) {
   return function compileOverride(content, filename) {
     if (shouldTranslate(filename)) {
@@ -72,6 +79,7 @@ function createCompileOverride(options = {}) {
         module: true,
         transformModules: true,
         validate: options.validate,
+        loadModule: createRequire(filename),
       });
       content = result.output;
       if (result.mappings) {

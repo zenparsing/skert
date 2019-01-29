@@ -35,7 +35,7 @@ export function compile(source, options = {}) {
   });
 
   let context = options.context || new Map();
-  let registry = registerTransforms(transforms, context);
+  let registry = registerTransforms(transforms, context, options.loadModule);
 
   runProcessors(rootPath, registry);
 
@@ -67,13 +67,14 @@ export function compile(source, options = {}) {
 }
 
 
-function registerTransforms(transforms, context) {
+function registerTransforms(transforms, context, loadModule) {
   let registry = new Set();
 
   let api = {
     define(processor) { registry.add(processor); },
     templates,
     context,
+    loadModule,
     AST,
   };
 

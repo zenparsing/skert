@@ -1,9 +1,27 @@
 import { createRunner } from '../runner.js';
 
-const test = createRunner({ module: false });
+const modules = new Map();
+
+modules.set('a', {
+  a() {
+    return {
+      type: 'ExpressionStatement',
+      expression: {
+        type: 'StringLiteral',
+        value: 'hello world',
+      },
+    };
+  },
+});
+
+const test = createRunner({
+  module: true,
+  loadModule: specifier => modules.get(specifier),
+});
 
 test('annotations', `
-  #[a, b] function f() {}
+  import { a } from 'a';
+  #[a] function f() {}
 `, `
-  function f() {}
+  'hello world';
 `);

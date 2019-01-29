@@ -7,6 +7,7 @@ export class Path {
     this.@location = location;
     this.@parent = parent;
     this.@scopeInfo = parent ? parent.@scopeInfo : null;
+    this.@annotations = parent ? parent.@annotations : null;
     this.@changeList = [];
   }
 
@@ -20,6 +21,10 @@ export class Path {
 
   get parentNode() {
     return this.@parent ? this.@parent.@node : null;
+  }
+
+  getAnnotations() {
+    return this.@annotations && this.@annotations.get(this.@node) || [];
   }
 
   forEachChild(fn) {
@@ -83,17 +88,13 @@ export class Path {
       method.call(visitor, this);
     }
 
-    if (!this.@node) {
-      return;
+    if (!method) {
+      this.visitChildren(visitor);
     }
 
     let { after } = visitor;
     if (typeof after === 'function') {
       after.call(visitor, this);
-    }
-
-    if (!method) {
-      this.visitChildren(visitor);
     }
   }
 
@@ -127,6 +128,7 @@ export class Path {
   static fromParseResult(result) {
     let path = new Path(result.ast);
     path.@scopeInfo = getScopeInfo(result.scopeTree);
+    path.@annotations = result.annotations;
     return path;
   }
 
