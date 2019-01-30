@@ -86,7 +86,27 @@ console.log(Reflect.ownKeys(obj)); // [Symbol('@foo')]
 
 ### Build-Time Macros
 
-*Coming Soon*
+Macros give the user the ability to transform the program structure at build-time.
+
+```js
+import { deprecated } from './macros/deprecated.js';
+
+#[deprecated]
+function dontUseMeAnymore() {
+  // ...
+}
+```
+
+```js
+import { templates } from 'ast-helpers';
+
+export function deprecated(ast) {
+  ast.statements.unshift(templates.statement`
+    console.warn('This function is deprecated');
+  `);
+  return ast;
+}
+```
 
 ### Class Mixins
 
