@@ -93,7 +93,7 @@ import { deprecated } from './macros/deprecated.js';
 
 #[deprecated]
 function dontUseMeAnymore() {
-  // ...
+  eval('Bad idea Petey!');
 }
 ```
 
@@ -101,7 +101,7 @@ function dontUseMeAnymore() {
 import { templates } from 'ast-helpers';
 
 export function deprecated(ast) {
-  ast.statements.unshift(templates.statement`
+  ast.body.statements.unshift(templates.statement`
     console.warn('This function is deprecated');
   `);
   return ast;
