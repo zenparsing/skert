@@ -98,7 +98,7 @@ The idea here is that property names that start with `@` are symbol literals, sc
 
 The ability of the programmer to *abstract over syntax*, to create programs which create other programs, is as important as it is dangerous. However, I think that we've reached a point where our users need macros.
 
-Instead of something like decorators, which only gets us halfway to syntactic abstraction (and only with classes!), let's take inspiration from Rust and define "procedural macros":
+Instead of something like decorators, which only gets us halfway to syntactic abstraction (and only with classes), let's take inspiration from Rust and define "procedural macros":
 
 ```js
 import { deprecated } from './macros';
@@ -179,4 +179,4 @@ new C().bar(); // 'b'
 
 ## Waking to Reality
 
-In case you missed it, this dream of a JavaScript future doesn't line up very well with the path that we are on. There are no decorators. There are no private fields and no private methods. Perhaps we are too far down the road to change course now. Perhaps too many individuals have put too much work into current proposals to abandon (or modify) that work now. But if we can change course, I think that we should. Our current designs are stuck in a world that we envisioned in 2016. A better future awaits us.
+In case you missed it, this dream of a JavaScript future doesn't line up very well with the path that we are on. There are no decorators. There are no private fields and no private methods. Perhaps we are too far down the road to change course now. Perhaps too many individuals have put too much work into current proposals to abandon (or modify) that work now. But if we can change course, I think that we should. Our current designs are stuck in a world that we envisioned in 2016. A better future is possible.
