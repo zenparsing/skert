@@ -93,7 +93,7 @@ import { deprecated } from './macros/deprecated.js';
 
 #[deprecated]
 function dontUseMeAnymore() {
-  eval('Bad idea Petey!');
+  eval('You wrote a bad song Petey!');
 }
 ```
 

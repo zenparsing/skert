@@ -58,11 +58,11 @@ test(`deprecated annotation`, `
 
   #[deprecated]
   function dontUseMeAnymore() {
-    eval('Bad idea, Petey!');
+    eval('You wrote a bad song, Petey!');
   }
 `, `
   function dontUseMeAnymore() {
     console.warn('This function is deprecated');
-    eval('Bad idea, Petey!');
+    eval('You wrote a bad song, Petey!');
   }
 `);
