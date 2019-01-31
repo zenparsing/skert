@@ -124,8 +124,8 @@ In my opinion, a solution to the "encapsulated instance state" problem that impr
 
 I propose the following solution:
 
-- A standard library module that allows the user to generate state initialization and access functions.
-- A "call-with" operator (`->`) that allows the users to call a function with the first argument on the left-hand side.
+- A standard library module that allows the user to generate state initialization and access functions. See [hidden-state](https://github.com/zenparsing/hidden-state) for an informative implementation.
+- A "call-with" operator (`->`) that allows the users to call a function, passing the operand on the left-hand side as the first argument.
 
 ```js
 import privateState from 'std:private-state';
