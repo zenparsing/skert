@@ -67,7 +67,11 @@ With hash-methods, the method is placed on the instance, because hash-lookup mus
 
 ### WeakMap or properties?
 
-Hash-fields are explained as sugar over WeakMaps. However, it's not clear how that mental mapping is supposed to translate to hash-methods. A hash-method can be an accessor. How can WeakMaps contain accessors? This blurred distinction between values and properties increases the conceptual complexity of the language.
+Hash-fields are explained as sugar over WeakMaps. However, it's not clear how that mental mapping is supposed to translate to hash-methods. A hash-method can be an accessor. How can WeakMaps contain accessors? This blurred distinction between values and properties increases the conceptual complexity for users of the language.
+
+As a concrete example of this conceptual confusion, consider the proposed reification of hash fields by means of decorators. When a decorator is applied to a class element that is keyed with a hash-name, the decorating function receives a `PrivateName` object. This object has "get" and "set" methods that allow access to the underlying data value, but unlike normal properties there is no way to change a private accessor property to a data property after the class definition is evaluated.
+
+The WeakMap model of private state does not integrate well with JavaScript's property-based syntactic features.
 
 ### Forced syntax
 
@@ -117,12 +121,12 @@ The hash-fields feature overloads familiar syntactic elements like fields, metho
 
 ## 7. A new alternative
 
-In my opinion, a solution to the "encapsulated instance state" problem that improves upon hash-fields is achievable. Such a solution would have the following characteristics:
+In our opinion, a solution to the "encapsulated instance state" problem that improves upon hash-fields is achievable. Such a solution would have the following characteristics:
 
 - Since it is an advanced feature, it should not place supporting syntax at the center of the language.
 - Since it is fundamentally different from property access in ways that cannot be ignored, it should not overload property syntax.
 
-I propose the following solution:
+We propose the following solution:
 
 - A standard library module that allows the user to generate state initialization and access functions. See [hidden-state](https://github.com/zenparsing/hidden-state) for an informative implementation.
 - A "call-with" operator (`->`) that allows the users to call a function, passing the operand on the left-hand side as the first argument.
@@ -149,3 +153,22 @@ class Point {
   }
 }
 ```
+
+This solution is both ergonomic and readable. It is immediately clear what parts of the class are "public" and what parts are "private".
+
+In order to address use cases that do not require perfect encapsulation we propose a more ergonomic syntax for using symbols:
+
+- A symbol literal (`@name`) can be used as a property name.
+- Any two syntactically identical symbol literals within a given module or script evaluate to the same symbol.
+
+```js
+class Node {
+  constructor(parent) {
+    this.@parent = parent;
+    this.@left = left;
+    this.@right = right;
+  }
+}
+```
+
+Properties defined using symbol literals can be accessed only by reflection. We claim that symbols are the appropriate encapsulation solution for the majority of use cases in idiomatic JavaScript.
