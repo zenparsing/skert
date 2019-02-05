@@ -15,18 +15,18 @@ export function registerTransform({ define, context, templates, AST }) {
         initializer: templates.expression`
           (target, ...sources) => {
             function copy(from, to) {
-              for (let key of Reflect.ownKeys(from)) {
-                if (!Reflect.getOwnPropertyDescriptor(to, key)) {
-                  Reflect.defineProperty(to, key, Reflect.getOwnPropertyDescriptor(from, key));
+              for (; from; from = Reflect.getPrototypeOf(from)) {
+                for (let key of Reflect.ownKeys(from)) {
+                  if (!Reflect.getOwnPropertyDescriptor(to, key)) {
+                    Reflect.defineProperty(to, key,
+                      Reflect.getOwnPropertyDescriptor(from, key)
+                    );
+                  }
                 }
               }
             }
 
             for (let source of sources) {
-              if (typeof source !== 'function') {
-                throw new TypeError('Invalid mixin source');
-              }
-
               copy(source, target);
               if (source.prototype) {
                 copy(source.prototype, target.prototype);

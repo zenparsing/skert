@@ -7,17 +7,16 @@ test.withContext('class declaration with mixin', `
 `, `
   const _classMixin = (target, ...sources) => {
     function copy(from, to) {
-      for (let key of Reflect.ownKeys(from)) {
-        if (!Reflect.getOwnPropertyDescriptor(to, key)) {
-          Reflect.defineProperty(to, key, Reflect.getOwnPropertyDescriptor(from, key));
+      for (; from; from = Reflect.getPrototypeOf(from)) {
+        for (let key of Reflect.ownKeys(from)) {
+          if (!Reflect.getOwnPropertyDescriptor(to, key)) {
+            Reflect.defineProperty(to, key, Reflect.getOwnPropertyDescriptor(from, key));
+          }
         }
       }
     }
 
     for (let source of sources) {
-      if (typeof source !== 'function') {
-        throw new TypeError('Invalid mixin source');
-      }
       copy(source, target);
       if (source.prototype) {
         copy(source.prototype, target.prototype);
@@ -75,4 +74,13 @@ test.run('mixins are correctly applied', `
   value = [c.x(), C.y(), c.z()];
 `, [
   'Ax', 'Ay', 'Bz'
+]);
+
+test.run('mixins copy from the prototype chain', `
+  class A { p() {} static s() {} }
+  class B extends A {}
+  class C with B {}
+  value = [typeof C.prototype.p, typeof C.s];
+`, [
+  'function', 'function'
 ]);
