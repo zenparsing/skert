@@ -3,64 +3,15 @@ import * as path from 'path';
 import { compile } from './Compiler.js';
 
 const translationMappings = new Map();
-
-class ModuleLoader {
-
-  constructor(location) {
-    if (!location) {
-      location = path.join(process.cwd(), 'module-loader');
-    }
-
-    this.@location = location;
-    this.@module = new Module(location, null);
-    this.@module.filename = location;
-    this.@module.paths = Module._nodeModulePaths(path.dirname(location));
-  }
-
-  resolve(specifier) {
-    return Module._resolveFilename(specifier, this.@module, false, {});
-  }
-
-  load(specifier) {
-    startModuleTranslation();
-    try {
-      return this.@module.require(this.resolve(specifier));
-    } finally {
-      endModuleTranslation();
-    }
-  }
-
-}
+const modulePrototypeCompile = Module.prototype._compile;
+const errorPrepareStackTrace = Error.prepareStackTrace;
 
 export function registerLoader(options) {
-  startModuleTranslation(options);
-  return endModuleTranslation;
-}
-
-let originals = null;
-
-function startModuleTranslation(options) {
-  if (originals) {
-    originals.refCount += 1;
-    return;
-  }
-
-  originals = {
-    refCount: 1,
-    prepareStackTrace: Error.prepareStackTrace,
-    compile: Module.prototype._compile,
-  };
-
-  Module.prototype._compile = createCompileOverride(options);
   Error.prepareStackTrace = prepareStackTraceOverride;
-}
-
-function endModuleTranslation() {
-  originals.refCount -= 1;
-  if (originals.refCount === 0) {
-    Module.prototype._compile = originals.compile;
-    Error.prepareStackTrace = originals.prepareStackTrace;
-    originals = null;
+  if (process.moduleLoaderPlugins) {
+    process.moduleLoaderPlugins.push(createLoaderPlugin(options));
+  } else {
+    Module.prototype._compile = createCompileOverride(options);
   }
 }
 
@@ -69,6 +20,28 @@ function createRequire(location) {
   module.filename = location;
   module.paths = Module._nodeModulePaths(path.dirname(location));
   return module.require.bind(module);
+}
+
+function createLoaderPlugin(options = {}) {
+  return {
+    translate(source, url) {
+      if (shouldTranslate(url)) {
+        let result = compile(source, {
+          location: url,
+          module: true,
+          transformModules: false,
+          validate: options.validate,
+          // TODO: this is wrong
+          // loadModule: createRequire(filename),
+        });
+        source = result.output;
+        if (result.mappings) {
+          translationMappings.set(url, result.mappings);
+        }
+        return source;
+      }
+    }
+  };
 }
 
 function createCompileOverride(options = {}) {
@@ -86,13 +59,16 @@ function createCompileOverride(options = {}) {
         translationMappings.set(filename, result.mappings);
       }
     }
-    return originals.compile.call(this, content, filename);
+    return modulePrototypeCompile.call(this, content, filename);
   };
 }
 
 function shouldTranslate(filename) {
-  // Don't translate files in node_modules
-  return !/[/\\]node_modules[/\\]/i.test(filename);
+  // Translate .js files that are not in node_modules
+  return (
+    /\.m?js$/i.test(filename) &&
+    !/[/\\]node_modules[/\\]/i.test(filename)
+  );
 }
 
 function removeShebang(content) {
