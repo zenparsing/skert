@@ -8,10 +8,9 @@ const errorPrepareStackTrace = Error.prepareStackTrace;
 
 export function registerLoader(options) {
   Error.prepareStackTrace = prepareStackTraceOverride;
-  if (process.moduleLoaderPlugins) {
-    process.moduleLoaderPlugins.push(createLoaderPlugin(options));
-  } else {
-    Module.prototype._compile = createCompileOverride(options);
+  Module.prototype._compile = createCompileOverride(options);
+  if (process.addModuleLoaderPlugin) {
+    process.addModuleLoaderPlugin(createLoaderPlugin(options));
   }
 }
 
