@@ -69,7 +69,9 @@ export function registerTransform({ define, context, templates, AST }) {
         path.replaceNode(templates.expression`
           (
             ${ temp } = ${ member.object },
-            ${ helper }(${ temp }, ${ new AST.MemberExpression(temp, member.property) })
+            ${ helper }(${ temp }, ${
+              new AST.MemberExpression(new AST.Identifier(temp), member.property)
+            })
           )
         `);
       }

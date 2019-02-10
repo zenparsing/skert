@@ -146,13 +146,20 @@ export class Path {
       parent[key] === node;
 
     if (!valid) {
-      AST.forEachChild(parent, (child, k, i, stop) => {
-        if (child === node) {
-          valid = true;
-          this.@location = { key: (key = k), index: (index = i) };
-          return stop;
+      let stop = {};
+      try {
+        parent.forEachChild((child, k, i) => {
+          if (child === node) {
+            valid = true;
+            this.@location = { key: (key = k), index: (index = i) };
+            throw stop;
+          }
+        });
+      } catch (e) {
+        if (e !== stop) {
+          throw e;
         }
-      });
+      }
     }
 
     if (!valid) {
@@ -218,16 +225,13 @@ class ChangeRecord {
 
   insertDeclaration(ident, options) {
     let { statements } = getBlock(this.path).node;
-
-    statements.unshift({
-      type: 'VariableDeclaration',
-      kind: options.kind,
-      declarations: [{
-        type: 'VariableDeclarator',
-        pattern: { type: 'Identifier', value: ident },
-        initializer: options.initializer || null,
-      }],
-    });
+    let declaration = new AST.VariableDeclaration(options.kind, [
+      new AST.VariableDeclarator(
+        new AST.Identifier(ident),
+        options.initializer || null
+      )
+    ]);
+    statements.unshift(declaration);
   }
 
 }

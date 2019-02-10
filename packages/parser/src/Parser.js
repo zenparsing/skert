@@ -687,7 +687,7 @@ export class Parser with Transform, Validate {
 
     this.context.hasYieldAwait = true;
 
-    return this.node(new AST.YieldExpression(expr, delegate), start);
+    return this.node(new AST.YieldExpression(delegate, expr), start);
   }
 
   ConditionalExpression(noIn) {
@@ -2221,7 +2221,7 @@ export class Parser with Transform, Validate {
   ArrowFunctionBody(head, noIn) {
     this.read('=>');
 
-    let params = head.parameters;
+    let params = head.params;
     let start = head.start;
     let kind = this.context.isAsync ? 'async' : '';
 
