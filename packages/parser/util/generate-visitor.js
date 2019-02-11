@@ -22,7 +22,7 @@ while (true) {
       if (!out) {
         out = `  ${ m[1] }(node, fn) {\n`;
       }
-      out += `    visit('${ p[1] }', node.${ p[1] }, fn);\n`
+      out += `    v('${ p[1] }', node.${ p[1] }, fn);\n`
     }
   }
   if (out) {
@@ -33,7 +33,7 @@ while (true) {
 }
 
 let output =
-`function visit(key, value, fn) {
+`function v(key, value, fn) {
   if (Array.isArray(value)) {
     for (let i = 0; i < value.length; ++i) {
       fn(value[i], key, i);
@@ -43,14 +43,16 @@ let output =
   }
 }
 
-const visitor = {
+class ChildVisitor {
 
-${ list.join(',\n\n') },
+${ list.join('\n\n') }
 
-};
+}
+
+const childVisitor = new ChildVisitor();
 
 export function forEachChild(node, fn) {
-  visitor[node.type](node, fn);
+  childVisitor[node.type](node, fn);
 }
 `;
 
