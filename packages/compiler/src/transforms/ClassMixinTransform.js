@@ -49,7 +49,7 @@ export function registerTransform({ define, context, templates, AST }) {
       let { node } = path;
       let { mixins } = node;
 
-      if (!mixins) {
+      if (mixins.length === 0) {
         return;
       }
 
@@ -80,7 +80,7 @@ export function registerTransform({ define, context, templates, AST }) {
       path.visitChildren(this);
 
       let { mixins } = path.node;
-      if (!mixins) {
+      if (mixins.length === 0) {
         return;
       }
 

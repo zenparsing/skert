@@ -19,7 +19,7 @@
           value: 'C',
           context: 'declaration' },
        base: null,
-       mixins: null,
+       mixins: [],
        body:
         {
           type: 'ClassBody',
@@ -62,7 +62,7 @@
           value: 'C',
           context: 'declaration' },
        base: null,
-       mixins: null,
+       mixins: [],
        body:
         {
           type: 'ClassBody',

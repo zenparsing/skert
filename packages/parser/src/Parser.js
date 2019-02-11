@@ -2258,12 +2258,7 @@ export class Parser with Transform, Validate {
       base = this.MemberExpression(true);
     }
 
-    let mixins = null;
-    if (this.peek() === 'with') {
-      this.read();
-      mixins = this.ClassMixinList();
-    }
-
+    let mixins = this.peek() === 'with' ? this.ClassMixinList() : [];
     let body = this.ClassBody(kind);
 
     this.popContext();
@@ -2297,12 +2292,7 @@ export class Parser with Transform, Validate {
       base = this.MemberExpression(true);
     }
 
-    let mixins = null;
-    if (this.peek() === 'with') {
-      this.read();
-      mixins = this.ClassMixinList();
-    }
-
+    let mixins = this.peek() === 'with' ? this.ClassMixinList() : [];
     let body = this.ClassBody(kind);
 
     this.popContext();
@@ -2316,6 +2306,8 @@ export class Parser with Transform, Validate {
   }
 
   ClassMixinList() {
+    this.read();
+
     let list = [];
 
     while (true) {

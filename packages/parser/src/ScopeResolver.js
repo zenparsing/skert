@@ -108,7 +108,6 @@ export class ScopeResolver {
     }
 
     let f = this[node.type];
-
     if (typeof f === 'function') {
       f.call(this, node, kind);
     } else {
@@ -306,7 +305,7 @@ export class ScopeResolver {
     this.pushScope('class', node);
     this.top.strict = true;
     this.visit(node.base);
-    this.visit(node.mixins);
+    node.mixins.forEach(c => this.visit(c));
     this.visit(node.body);
     this.popScope();
   }
@@ -316,7 +315,7 @@ export class ScopeResolver {
     this.top.strict = true;
     this.visit(node.identifier);
     this.visit(node.base);
-    this.visit(node.mixins);
+    node.mixins.forEach(c => this.visit(c));
     this.visit(node.body);
     this.popScope();
   }

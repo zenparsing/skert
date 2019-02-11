@@ -54,27 +54,30 @@ function smokeTest() {
 }
 
 function saveCurrent() {
+  let files = ['cli.js', 'compiler.js', 'parser.js'];
+  let stored = new Map();
+
   function store() {
     if (!fs.existsSync($('build/lkg'))) {
       fs.mkdirSync($('build/lkg'));
     }
     let dir = $(`build/lkg/${ Date.now() }`);
     fs.mkdirSync(dir);
-    fs.writeFileSync(`${ dir }/cli.js`, cliCode, { encoding: 'utf8' });
-    fs.writeFileSync(`${ dir }/compiler.js`, compilerCode, { encoding: 'utf8' });
+    for (let file of files) {
+      fs.writeFileSync(`${ dir }/${ file }`, stored.get(file), 'utf8');
+    }
   }
 
   function restore() {
-    fs.writeFileSync('build/out/cli.js', cliCode, { encoding: 'utf8' });
-    fs.writeFileSync('build/out/compiler.js', compilerCode, { encoding: 'utf8' });
+    for (let file of files) {
+      fs.writeFileSync(`build/out/${ file }`, stored.get(file), 'utf8');
+    }
   }
 
-  let cliCode;
-  let compilerCode;
-
   try {
-    cliCode = fs.readFileSync($('build/out/cli.js'), 'utf8');
-    compilerCode = fs.readFileSync($('build/out/compiler.js'), 'utf8');
+    for (let file of files) {
+      stored.set(file, fs.readFileSync($(`build/out/${ file }`), 'utf8'));
+    }
   } catch (e) {
     trap(
       new Error('Build files not found - run build/bootstrap to generate initial builds.')

@@ -161,7 +161,7 @@ function renderTree(obj, skipKeys) {
     return c;
   }
 
-  let out = inspect(clone(obj), { depth: 10 });
+  let out = inspect(clone(obj), { depth: 20 });
 
   FS.writeFileSync(Path.resolve(import.meta.dirname, '_fail.js'), out, {
     encoding: 'utf8',

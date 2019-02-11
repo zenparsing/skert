@@ -148,7 +148,7 @@ export class Path {
     if (!valid) {
       let stop = {};
       try {
-        parent.forEachChild((child, k, i) => {
+        AST.forEachChild(parent, (child, k, i) => {
           if (child === node) {
             valid = true;
             this.@location = { key: (key = k), index: (index = i) };

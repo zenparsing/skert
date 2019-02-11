@@ -62,7 +62,7 @@
           value: 'C',
           context: 'declaration' },
        base: null,
-       mixins: null,
+       mixins: [],
        body:
         { type: 'ClassBody',
           start: 8,

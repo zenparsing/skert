@@ -39,7 +39,7 @@
    [ { type: 'ClassDeclaration',
        identifier: { type: 'Identifier', value: 'C' },
        base: null,
-       mixins: null,
+       mixins: [],
        body: { type: 'ClassBody', elements: [] } } ] },
 
 /*** #[a] class C {} ***/
@@ -49,7 +49,7 @@
    [ { type: 'ClassDeclaration',
        identifier: { type: 'Identifier', value: 'C' },
        base: null,
-       mixins: null,
+       mixins: [],
        body: { type: 'ClassBody', elements: [] } } ] },
 
 /*** #[a] export class C {} ***/
@@ -61,7 +61,7 @@
         { type: 'ClassDeclaration',
           identifier: { type: 'Identifier', value: 'C' },
           base: null,
-          mixins: null,
+          mixins: [],
           body: { type: 'ClassBody', elements: [] } } } ] },
 
 /** #[a] x; **/
@@ -125,7 +125,7 @@
    [ { type: 'ClassDeclaration',
        identifier: { type: 'Identifier', value: 'C' },
        base: null,
-       mixins: null,
+       mixins: [],
        body:
         { type: 'ClassBody',
           elements:
@@ -141,7 +141,7 @@
    [ { type: 'ClassDeclaration',
        identifier: { type: 'Identifier', value: 'C' },
        base: null,
-       mixins: null,
+       mixins: [],
        body:
         { type: 'ClassBody',
           elements:
@@ -157,7 +157,7 @@
    [ { type: 'ClassDeclaration',
        identifier: { type: 'Identifier', value: 'C' },
        base: null,
-       mixins: null,
+       mixins: [],
        body:
         { type: 'ClassBody',
           elements:
@@ -175,7 +175,7 @@
    [ { type: 'ClassDeclaration',
        identifier: { type: 'Identifier', value: 'C' },
        base: null,
-       mixins: null,
+       mixins: [],
        body:
         { type: 'ClassBody',
           elements:
