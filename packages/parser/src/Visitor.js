@@ -1,9 +1,13 @@
-function v(key, value, fn) {
-  if (Array.isArray(value)) {
+function list(value, key, fn) {
+  if (value) {
     for (let i = 0; i < value.length; ++i) {
       fn(value[i], key, i);
     }
-  } else if (value) {
+  }
+}
+
+function prop(value, key, fn) {
+  if (value) {
     fn(value, key);
   }
 }
@@ -33,358 +37,358 @@ class ChildVisitor {
   MetaProperty() {}
 
   Script(node, fn) {
-    v('statements', node.statements, fn);
+    list(node.statements, 'statements', fn);
   }
 
   Module(node, fn) {
-    v('statements', node.statements, fn);
+    list(node.statements, 'statements', fn);
   }
 
   SequenceExpression(node, fn) {
-    v('expressions', node.expressions, fn);
+    list(node.expressions, 'expressions', fn);
   }
 
   AssignmentExpression(node, fn) {
-    v('left', node.left, fn);
-    v('right', node.right, fn);
+    prop(node.left, 'left', fn);
+    prop(node.right, 'right', fn);
   }
 
   SpreadExpression(node, fn) {
-    v('expression', node.expression, fn);
+    prop(node.expression, 'expression', fn);
   }
 
   YieldExpression(node, fn) {
-    v('expression', node.expression, fn);
+    prop(node.expression, 'expression', fn);
   }
 
   ConditionalExpression(node, fn) {
-    v('test', node.test, fn);
-    v('consequent', node.consequent, fn);
-    v('alternate', node.alternate, fn);
+    prop(node.test, 'test', fn);
+    prop(node.consequent, 'consequent', fn);
+    prop(node.alternate, 'alternate', fn);
   }
 
   BinaryExpression(node, fn) {
-    v('left', node.left, fn);
-    v('right', node.right, fn);
+    prop(node.left, 'left', fn);
+    prop(node.right, 'right', fn);
   }
 
   UpdateExpression(node, fn) {
-    v('expression', node.expression, fn);
+    prop(node.expression, 'expression', fn);
   }
 
   UnaryExpression(node, fn) {
-    v('expression', node.expression, fn);
+    prop(node.expression, 'expression', fn);
   }
 
   MemberExpression(node, fn) {
-    v('object', node.object, fn);
-    v('property', node.property, fn);
+    prop(node.object, 'object', fn);
+    prop(node.property, 'property', fn);
   }
 
   CallExpression(node, fn) {
-    v('callee', node.callee, fn);
-    v('arguments', node.arguments, fn);
+    prop(node.callee, 'callee', fn);
+    list(node.arguments, 'arguments', fn);
   }
 
   CallWithExpression(node, fn) {
-    v('subject', node.subject, fn);
-    v('callee', node.callee, fn);
-    v('arguments', node.arguments, fn);
+    prop(node.subject, 'subject', fn);
+    prop(node.callee, 'callee', fn);
+    list(node.arguments, 'arguments', fn);
   }
 
   TemplateExpression(node, fn) {
-    v('parts', node.parts, fn);
+    list(node.parts, 'parts', fn);
   }
 
   TaggedTemplateExpression(node, fn) {
-    v('tag', node.tag, fn);
-    v('template', node.template, fn);
+    prop(node.tag, 'tag', fn);
+    prop(node.template, 'template', fn);
   }
 
   NewExpression(node, fn) {
-    v('callee', node.callee, fn);
-    v('arguments', node.arguments, fn);
+    prop(node.callee, 'callee', fn);
+    list(node.arguments, 'arguments', fn);
   }
 
   ParenExpression(node, fn) {
-    v('expression', node.expression, fn);
+    prop(node.expression, 'expression', fn);
   }
 
   ObjectLiteral(node, fn) {
-    v('properties', node.properties, fn);
+    list(node.properties, 'properties', fn);
   }
 
   ComputedPropertyName(node, fn) {
-    v('expression', node.expression, fn);
+    prop(node.expression, 'expression', fn);
   }
 
   PropertyDefinition(node, fn) {
-    v('name', node.name, fn);
-    v('expression', node.expression, fn);
+    prop(node.name, 'name', fn);
+    prop(node.expression, 'expression', fn);
   }
 
   ObjectPattern(node, fn) {
-    v('properties', node.properties, fn);
+    list(node.properties, 'properties', fn);
   }
 
   PatternProperty(node, fn) {
-    v('name', node.name, fn);
-    v('pattern', node.pattern, fn);
-    v('initializer', node.initializer, fn);
+    prop(node.name, 'name', fn);
+    prop(node.pattern, 'pattern', fn);
+    prop(node.initializer, 'initializer', fn);
   }
 
   ArrayPattern(node, fn) {
-    v('elements', node.elements, fn);
+    list(node.elements, 'elements', fn);
   }
 
   PatternElement(node, fn) {
-    v('pattern', node.pattern, fn);
-    v('initializer', node.initializer, fn);
+    prop(node.pattern, 'pattern', fn);
+    prop(node.initializer, 'initializer', fn);
   }
 
   PatternRestElement(node, fn) {
-    v('pattern', node.pattern, fn);
+    prop(node.pattern, 'pattern', fn);
   }
 
   MethodDefinition(node, fn) {
-    v('name', node.name, fn);
-    v('params', node.params, fn);
-    v('body', node.body, fn);
+    prop(node.name, 'name', fn);
+    list(node.params, 'params', fn);
+    prop(node.body, 'body', fn);
   }
 
   ArrayLiteral(node, fn) {
-    v('elements', node.elements, fn);
+    list(node.elements, 'elements', fn);
   }
 
   Block(node, fn) {
-    v('statements', node.statements, fn);
+    list(node.statements, 'statements', fn);
   }
 
   LabelledStatement(node, fn) {
-    v('label', node.label, fn);
-    v('statement', node.statement, fn);
+    prop(node.label, 'label', fn);
+    prop(node.statement, 'statement', fn);
   }
 
   ExpressionStatement(node, fn) {
-    v('expression', node.expression, fn);
+    prop(node.expression, 'expression', fn);
   }
 
   Directive(node, fn) {
-    v('expression', node.expression, fn);
+    prop(node.expression, 'expression', fn);
   }
 
   EmptyStatement() {}
 
   VariableDeclaration(node, fn) {
-    v('declarations', node.declarations, fn);
+    list(node.declarations, 'declarations', fn);
   }
 
   VariableDeclarator(node, fn) {
-    v('pattern', node.pattern, fn);
-    v('initializer', node.initializer, fn);
+    prop(node.pattern, 'pattern', fn);
+    prop(node.initializer, 'initializer', fn);
   }
 
   ReturnStatement(node, fn) {
-    v('argument', node.argument, fn);
+    prop(node.argument, 'argument', fn);
   }
 
   BreakStatement(node, fn) {
-    v('label', node.label, fn);
+    prop(node.label, 'label', fn);
   }
 
   ContinueStatement(node, fn) {
-    v('label', node.label, fn);
+    prop(node.label, 'label', fn);
   }
 
   ThrowStatement(node, fn) {
-    v('expression', node.expression, fn);
+    prop(node.expression, 'expression', fn);
   }
 
   DebuggerStatement() {}
 
   IfStatement(node, fn) {
-    v('test', node.test, fn);
-    v('consequent', node.consequent, fn);
-    v('alternate', node.alternate, fn);
+    prop(node.test, 'test', fn);
+    prop(node.consequent, 'consequent', fn);
+    prop(node.alternate, 'alternate', fn);
   }
 
   DoWhileStatement(node, fn) {
-    v('body', node.body, fn);
-    v('test', node.test, fn);
+    prop(node.body, 'body', fn);
+    prop(node.test, 'test', fn);
   }
 
   WhileStatement(node, fn) {
-    v('test', node.test, fn);
-    v('body', node.body, fn);
+    prop(node.test, 'test', fn);
+    prop(node.body, 'body', fn);
   }
 
   ForStatement(node, fn) {
-    v('initializer', node.initializer, fn);
-    v('test', node.test, fn);
-    v('update', node.update, fn);
-    v('body', node.body, fn);
+    prop(node.initializer, 'initializer', fn);
+    prop(node.test, 'test', fn);
+    prop(node.update, 'update', fn);
+    prop(node.body, 'body', fn);
   }
 
   ForInStatement(node, fn) {
-    v('left', node.left, fn);
-    v('right', node.right, fn);
-    v('body', node.body, fn);
+    prop(node.left, 'left', fn);
+    prop(node.right, 'right', fn);
+    prop(node.body, 'body', fn);
   }
 
   ForOfStatement(node, fn) {
-    v('left', node.left, fn);
-    v('right', node.right, fn);
-    v('body', node.body, fn);
+    prop(node.left, 'left', fn);
+    prop(node.right, 'right', fn);
+    prop(node.body, 'body', fn);
   }
 
   WithStatement(node, fn) {
-    v('object', node.object, fn);
-    v('body', node.body, fn);
+    prop(node.object, 'object', fn);
+    prop(node.body, 'body', fn);
   }
 
   SwitchStatement(node, fn) {
-    v('descriminant', node.descriminant, fn);
-    v('cases', node.cases, fn);
+    prop(node.descriminant, 'descriminant', fn);
+    list(node.cases, 'cases', fn);
   }
 
   SwitchCase(node, fn) {
-    v('test', node.test, fn);
-    v('consequent', node.consequent, fn);
+    prop(node.test, 'test', fn);
+    list(node.statements, 'statements', fn);
   }
 
   TryStatement(node, fn) {
-    v('block', node.block, fn);
-    v('handler', node.handler, fn);
-    v('finalizer', node.finalizer, fn);
+    prop(node.block, 'block', fn);
+    prop(node.handler, 'handler', fn);
+    prop(node.finalizer, 'finalizer', fn);
   }
 
   CatchClause(node, fn) {
-    v('param', node.param, fn);
-    v('body', node.body, fn);
+    prop(node.param, 'param', fn);
+    prop(node.body, 'body', fn);
   }
 
   FunctionDeclaration(node, fn) {
-    v('identifier', node.identifier, fn);
-    v('params', node.params, fn);
-    v('body', node.body, fn);
+    prop(node.identifier, 'identifier', fn);
+    list(node.params, 'params', fn);
+    prop(node.body, 'body', fn);
   }
 
   FunctionExpression(node, fn) {
-    v('identifier', node.identifier, fn);
-    v('params', node.params, fn);
-    v('body', node.body, fn);
+    prop(node.identifier, 'identifier', fn);
+    list(node.params, 'params', fn);
+    prop(node.body, 'body', fn);
   }
 
   FormalParameter(node, fn) {
-    v('pattern', node.pattern, fn);
-    v('initializer', node.initializer, fn);
+    prop(node.pattern, 'pattern', fn);
+    prop(node.initializer, 'initializer', fn);
   }
 
   RestParameter(node, fn) {
-    v('identifier', node.identifier, fn);
+    prop(node.identifier, 'identifier', fn);
   }
 
   FunctionBody(node, fn) {
-    v('statements', node.statements, fn);
+    list(node.statements, 'statements', fn);
   }
 
   ArrowFunctionHead(node, fn) {
-    v('params', node.params, fn);
+    list(node.params, 'params', fn);
   }
 
   ArrowFunction(node, fn) {
-    v('params', node.params, fn);
-    v('body', node.body, fn);
+    list(node.params, 'params', fn);
+    prop(node.body, 'body', fn);
   }
 
   ClassDeclaration(node, fn) {
-    v('identifier', node.identifier, fn);
-    v('base', node.base, fn);
-    v('mixins', node.mixins, fn);
-    v('body', node.body, fn);
+    prop(node.identifier, 'identifier', fn);
+    prop(node.base, 'base', fn);
+    list(node.mixins, 'mixins', fn);
+    prop(node.body, 'body', fn);
   }
 
   ClassExpression(node, fn) {
-    v('identifier', node.identifier, fn);
-    v('base', node.base, fn);
-    v('mixins', node.mixins, fn);
-    v('body', node.body, fn);
+    prop(node.identifier, 'identifier', fn);
+    prop(node.base, 'base', fn);
+    list(node.mixins, 'mixins', fn);
+    prop(node.body, 'body', fn);
   }
 
   ClassBody(node, fn) {
-    v('elements', node.elements, fn);
+    list(node.elements, 'elements', fn);
   }
 
   EmptyClassElement() {}
 
   ClassField(node, fn) {
-    v('name', node.name, fn);
-    v('initializer', node.initializer, fn);
+    prop(node.name, 'name', fn);
+    prop(node.initializer, 'initializer', fn);
   }
 
   ClassInitializer(node, fn) {
-    v('statements', node.statements, fn);
+    list(node.statements, 'statements', fn);
   }
 
   ImportCall(node, fn) {
-    v('argument', node.argument, fn);
+    prop(node.argument, 'argument', fn);
   }
 
   ImportDeclaration(node, fn) {
-    v('imports', node.imports, fn);
-    v('from', node.from, fn);
+    prop(node.imports, 'imports', fn);
+    prop(node.from, 'from', fn);
   }
 
   NamespaceImport(node, fn) {
-    v('identifier', node.identifier, fn);
+    prop(node.identifier, 'identifier', fn);
   }
 
   NamedImports(node, fn) {
-    v('specifiers', node.specifiers, fn);
+    list(node.specifiers, 'specifiers', fn);
   }
 
   DefaultImport(node, fn) {
-    v('identifier', node.identifier, fn);
-    v('imports', node.imports, fn);
+    prop(node.identifier, 'identifier', fn);
+    prop(node.imports, 'imports', fn);
   }
 
   ImportSpecifier(node, fn) {
-    v('imported', node.imported, fn);
-    v('local', node.local, fn);
+    prop(node.imported, 'imported', fn);
+    prop(node.local, 'local', fn);
   }
 
   ExportDeclaration(node, fn) {
-    v('declaration', node.declaration, fn);
+    prop(node.declaration, 'declaration', fn);
   }
 
   ExportDefault(node, fn) {
-    v('binding', node.binding, fn);
+    prop(node.binding, 'binding', fn);
   }
 
   ExportNameList(node, fn) {
-    v('specifiers', node.specifiers, fn);
-    v('from', node.from, fn);
+    list(node.specifiers, 'specifiers', fn);
+    prop(node.from, 'from', fn);
   }
 
   ExportNamespace(node, fn) {
-    v('identifier', node.identifier, fn);
-    v('from', node.from, fn);
+    prop(node.identifier, 'identifier', fn);
+    prop(node.from, 'from', fn);
   }
 
   ExportDefaultFrom(node, fn) {
-    v('identifier', node.identifier, fn);
-    v('from', node.from, fn);
+    prop(node.identifier, 'identifier', fn);
+    prop(node.from, 'from', fn);
   }
 
   ExportSpecifier(node, fn) {
-    v('local', node.local, fn);
-    v('exported', node.exported, fn);
+    prop(node.local, 'local', fn);
+    prop(node.exported, 'exported', fn);
   }
 
   Comment() {}
 
   Annotation(node, fn) {
-    v('expressions', node.expressions, fn);
+    list(node.expressions, 'expressions', fn);
   }
 
 }

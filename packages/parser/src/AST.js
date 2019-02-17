@@ -8,37 +8,37 @@ function init(node, type) {
 
 export function Identifier(value, context) {
   init(this, 'Identifier');
-  this.value = value; // skip
-  this.context = context; // skip
+  this.value = value; // value
+  this.context = context; // value
 }
 
 export function NumberLiteral(value, suffix) {
   init(this, 'NumberLiteral');
-  this.value = value; // skip
-  this.suffix = suffix; // skip
+  this.value = value; // value
+  this.suffix = suffix; // value
 }
 
 export function StringLiteral(value) {
   init(this, 'StringLiteral');
-  this.value = value; // skip
+  this.value = value; // value
 }
 
 export function TemplatePart(value, raw, isEnd) {
   init(this, 'TemplatePart');
-  this.value = value; // skip
-  this.raw = raw; // skip
-  this.templateEnd = isEnd; // skip
+  this.value = value; // value
+  this.raw = raw; // value
+  this.templateEnd = isEnd; // value
 }
 
 export function RegularExpression(value, flags) {
   init(this, 'RegularExpression');
-  this.value = value; // skip
-  this.flags = flags; // skip
+  this.value = value; // value
+  this.flags = flags; // value
 }
 
 export function BooleanLiteral(value) {
   init(this, 'BooleanLiteral');
-  this.value = value; // skip
+  this.value = value; // value
 }
 
 export function NullLiteral() {
@@ -47,7 +47,7 @@ export function NullLiteral() {
 
 export function SymbolName(value) {
   init(this, 'SymbolName');
-  this.value = value; // skip
+  this.value = value; // value
 }
 
 export function ThisExpression() {
@@ -60,29 +60,29 @@ export function SuperKeyword() {
 
 export function MetaProperty(left, right) {
   init(this, 'MetaProperty');
-  this.left = left; // skip
-  this.right = right; // skip
+  this.left = left; // value
+  this.right = right; // value
 }
 
 export function Script(statements) {
   init(this, 'Script');
-  this.statements = statements;
+  this.statements = statements; // list
 }
 
 export function Module(statements) {
   init(this, 'Module');
-  this.statements = statements;
+  this.statements = statements; // list
 }
 
 export function SequenceExpression(expressions) {
   init(this, 'SequenceExpression');
-  this.expressions = expressions;
+  this.expressions = expressions; // list
 }
 
 export function AssignmentExpression(left, op, right) {
   init(this, 'AssignmentExpression');
   this.left = left;
-  this.operator = op; // skip
+  this.operator = op; // value
   this.right = right;
 }
 
@@ -93,7 +93,7 @@ export function SpreadExpression(expr) {
 
 export function YieldExpression(delegate, expr) {
   init(this, 'YieldExpression');
-  this.delegate = delegate; // skip
+  this.delegate = delegate; // value
   this.expression = expr;
 }
 
@@ -107,20 +107,20 @@ export function ConditionalExpression(test, cons, alt) {
 export function BinaryExpression(left, op, right) {
   init(this, 'BinaryExpression');
   this.left = left;
-  this.operator = op; // skip
+  this.operator = op; // value
   this.right = right;
 }
 
 export function UpdateExpression(op, expr, prefix) {
   init(this, 'UpdateExpression');
-  this.operator = op; // skip
+  this.operator = op; // value
   this.expression = expr;
-  this.prefix = prefix; // skip
+  this.prefix = prefix; // value
 }
 
 export function UnaryExpression(op, expr) {
   init(this, 'UnaryExpression');
-  this.operator = op; // skip
+  this.operator = op; // value
   this.expression = expr;
 }
 
@@ -133,21 +133,21 @@ export function MemberExpression(obj, prop) {
 export function CallExpression(callee, args, trailingComma) {
   init(this, 'CallExpression');
   this.callee = callee;
-  this.arguments = args;
-  this.trailingComma = trailingComma; // skip
+  this.arguments = args; // list
+  this.trailingComma = trailingComma; // value
 }
 
 export function CallWithExpression(subject, callee, args, trailingComma) {
   init(this, 'CallWithExpression');
   this.subject = subject;
   this.callee = callee;
-  this.arguments = args;
-  this.trailingComma = trailingComma; // skip
+  this.arguments = args; // list
+  this.trailingComma = trailingComma; // value
 }
 
 export function TemplateExpression(parts) {
   init(this, 'TemplateExpression');
-  this.parts = parts;
+  this.parts = parts; // list
 }
 
 export function TaggedTemplateExpression(tag, template) {
@@ -159,8 +159,8 @@ export function TaggedTemplateExpression(tag, template) {
 export function NewExpression(callee, args, trailingComma) {
   init(this, 'NewExpression');
   this.callee = callee;
-  this.arguments = args;
-  this.trailingComma = trailingComma; // skip
+  this.arguments = args; // list
+  this.trailingComma = trailingComma; // value
 }
 
 export function ParenExpression(expr) {
@@ -170,8 +170,8 @@ export function ParenExpression(expr) {
 
 export function ObjectLiteral(props, trailingComma) {
   init(this, 'ObjectLiteral');
-  this.properties = props;
-  this.trailingComma = trailingComma; // skip
+  this.properties = props; // list
+  this.trailingComma = trailingComma; // value
 }
 
 export function ComputedPropertyName(expr) {
@@ -187,8 +187,8 @@ export function PropertyDefinition(name, expr) {
 
 export function ObjectPattern(props, trailingComma) {
   init(this, 'ObjectPattern');
-  this.properties = props;
-  this.trailingComma = trailingComma; // skip
+  this.properties = props; // list
+  this.trailingComma = trailingComma; // value
 }
 
 export function PatternProperty(name, pattern, initializer) {
@@ -200,8 +200,8 @@ export function PatternProperty(name, pattern, initializer) {
 
 export function ArrayPattern(elements, trailingComma) {
   init(this, 'ArrayPattern');
-  this.elements = elements;
-  this.trailingComma = trailingComma; // skip
+  this.elements = elements; // list
+  this.trailingComma = trailingComma; // value
 }
 
 export function PatternElement(pattern, initializer) {
@@ -217,22 +217,22 @@ export function PatternRestElement(pattern) {
 
 export function MethodDefinition(isStatic, kind, name, params, body) {
   init(this, 'MethodDefinition');
-  this.static = isStatic; // skip
-  this.kind = kind; // skip
+  this.static = isStatic; // value
+  this.kind = kind; // value
   this.name = name;
-  this.params = params;
+  this.params = params; // list
   this.body = body;
 }
 
 export function ArrayLiteral(elements, trailingComma) {
   init(this, 'ArrayLiteral');
-  this.elements = elements;
-  this.trailingComma = trailingComma; // skip
+  this.elements = elements; // list
+  this.trailingComma = trailingComma; // value
 }
 
 export function Block(statements) {
   init(this, 'Block');
-  this.statements = statements;
+  this.statements = statements; // list
 }
 
 export function LabelledStatement(label, statement) {
@@ -248,7 +248,7 @@ export function ExpressionStatement(expr) {
 
 export function Directive(value, expr) {
   init(this, 'Directive');
-  this.value = value; // skip
+  this.value = value; // value
   this.expression = expr;
 }
 
@@ -258,8 +258,8 @@ export function EmptyStatement() {
 
 export function VariableDeclaration(kind, declarations) {
   init(this, 'VariableDeclaration');
-  this.kind = kind; // skip
-  this.declarations = declarations;
+  this.kind = kind; // value
+  this.declarations = declarations; // list
 }
 
 export function VariableDeclarator(pattern, initializer) {
@@ -328,7 +328,7 @@ export function ForInStatement(left, right, body) {
 
 export function ForOfStatement(async, left, right, body) {
   init(this, 'ForOfStatement');
-  this.async = async; // skip
+  this.async = async; // value
   this.left = left;
   this.right = right;
   this.body = body;
@@ -343,13 +343,13 @@ export function WithStatement(object, body) {
 export function SwitchStatement(desc, cases) {
   init(this, 'SwitchStatement');
   this.descriminant = desc;
-  this.cases = cases;
+  this.cases = cases; // list
 }
 
-export function SwitchCase(test, cons) {
+export function SwitchCase(test, statements) {
   init(this, 'SwitchCase');
   this.test = test;
-  this.consequent = cons;
+  this.statements = statements; // list
 }
 
 export function TryStatement(block, handler, fin) {
@@ -367,17 +367,17 @@ export function CatchClause(param, body) {
 
 export function FunctionDeclaration(kind, identifier, params, body) {
   init(this, 'FunctionDeclaration');
-  this.kind = kind; // skip
+  this.kind = kind; // value
   this.identifier = identifier;
-  this.params = params;
+  this.params = params; // list
   this.body = body;
 }
 
 export function FunctionExpression(kind, identifier, params, body) {
   init(this, 'FunctionExpression');
-  this.kind = kind; // skip
+  this.kind = kind; // value
   this.identifier = identifier;
-  this.params = params;
+  this.params = params; // list
   this.body = body;
 }
 
@@ -394,18 +394,18 @@ export function RestParameter(identifier) {
 
 export function FunctionBody(statements) {
   init(this, 'FunctionBody');
-  this.statements = statements;
+  this.statements = statements; // list
 }
 
 export function ArrowFunctionHead(params) {
   init(this, 'ArrowFunctionHead');
-  this.params = params;
+  this.params = params; // list
 }
 
 export function ArrowFunction(kind, params, body) {
   init(this, 'ArrowFunction');
-  this.kind = kind; // skip
-  this.params = params;
+  this.kind = kind; // value
+  this.params = params; // list
   this.body = body;
 }
 
@@ -413,7 +413,7 @@ export function ClassDeclaration(identifier, base, mixins, body) {
   init(this, 'ClassDeclaration');
   this.identifier = identifier;
   this.base = base;
-  this.mixins = mixins;
+  this.mixins = mixins; // list
   this.body = body;
 }
 
@@ -421,13 +421,13 @@ export function ClassExpression(identifier, base, mixins, body) {
   init(this, 'ClassExpression');
   this.identifier = identifier;
   this.base = base;
-  this.mixins = mixins;
+  this.mixins = mixins; // list
   this.body = body;
 }
 
 export function ClassBody(elements) {
   init(this, 'ClassBody');
-  this.elements = elements;
+  this.elements = elements; // list
 }
 
 export function EmptyClassElement() {
@@ -436,14 +436,14 @@ export function EmptyClassElement() {
 
 export function ClassField(isStatic, name, initializer) {
   init(this, 'ClassField');
-  this.static = isStatic; // skip
+  this.static = isStatic; // value
   this.name = name;
   this.initializer = initializer;
 }
 
 export function ClassInitializer(statements) {
   init(this, 'ClassInitializer');
-  this.statements = statements;
+  this.statements = statements; // list
 }
 
 export function ImportCall(argument) {
@@ -464,7 +464,7 @@ export function NamespaceImport(identifier) {
 
 export function NamedImports(specifiers) {
   init(this, 'NamedImports');
-  this.specifiers = specifiers;
+  this.specifiers = specifiers; // list
 }
 
 export function DefaultImport(identifier, imports) {
@@ -491,7 +491,7 @@ export function ExportDefault(binding) {
 
 export function ExportNameList(specifiers, from) {
   init(this, 'ExportNameList');
-  this.specifiers = specifiers;
+  this.specifiers = specifiers; // list
   this.from = from;
 }
 
@@ -515,10 +515,10 @@ export function ExportSpecifier(local, exported) {
 
 export function Comment(text) {
   init(this, 'Comment');
-  this.text = text; // skip
+  this.text = text; // value
 }
 
 export function Annotation(expressions) {
   init(this, 'Annotation');
-  this.expressions = expressions;
+  this.expressions = expressions; // list
 }

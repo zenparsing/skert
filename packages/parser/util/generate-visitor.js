@@ -2,43 +2,60 @@ const path = require('path');
 const { readFileSync, writeFileSync } = require('fs');
 
 let source = readFileSync(path.resolve(__dirname, '../src/AST.js'), 'utf-8');
-let pattern = /(?:^|\n)export function (\w+)[\s\S]*?\n\}/g;
-let props = /this\.(\w+)\s*=.+/g;
+let ctorPattern = /(?:^|\n)export function (\w+)[\s\S]*?\n\}/g;
+let propPattern = /this\.(\w+)\s*=.+/g;
+let attrPattern = /\/\/\s*(\w+)\s*$/;
 let list = [];
 
 while (true) {
-  let m = pattern.exec(source);
-  if (!m) {
+  let ctorMatch = ctorPattern.exec(source);
+  if (!ctorMatch) {
     break;
   }
+
+  let type = ctorMatch[1];
   let out = '';
-  props.lastIndex = 0;
+
+  propPattern.lastIndex = 0;
   while (true) {
-    let p = props.exec(m[0]);
-    if (!p) {
+    let propMatch = propPattern.exec(ctorMatch[0]);
+    if (!propMatch) {
       break;
     }
-    if (!/\/\/\s*skip\s*$/.test(p[0])) {
+
+    let prop = propMatch[1];
+    let attrMatch = attrPattern.exec(propMatch[0]);
+    let attr = attrMatch ? attrMatch[1] : '';
+
+    if (attr !== 'value') {
       if (!out) {
-        out = `  ${ m[1] }(node, fn) {\n`;
+        out = `  ${ type }(node, fn) {\n`;
       }
-      out += `    v('${ p[1] }', node.${ p[1] }, fn);\n`
+      if (attr === 'list') {
+        out += `    list(node.${ prop }, '${ prop }', fn);\n`
+      } else {
+        out += `    prop(node.${ prop }, '${ prop }', fn);\n`;
+      }
     }
   }
   if (out) {
     list.push(out + '  }');
   } else {
-    list.push(`  ${ m[1] }() {}`);
+    list.push(`  ${ type }() {}`);
   }
 }
 
 let output =
-`function v(key, value, fn) {
-  if (Array.isArray(value)) {
+`function list(value, key, fn) {
+  if (value) {
     for (let i = 0; i < value.length; ++i) {
       fn(value[i], key, i);
     }
-  } else if (value) {
+  }
+}
+
+function prop(value, key, fn) {
+  if (value) {
     fn(value, key);
   }
 }

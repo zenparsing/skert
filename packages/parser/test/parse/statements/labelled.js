@@ -95,7 +95,7 @@
             start: 13,
             end: 28,
             test: null,
-            consequent: [ { type: 'BreakStatement', start: 22, end: 28, label: null } ] } ] } ] },
+            statements: [ { type: 'BreakStatement', start: 22, end: 28, label: null } ] } ] } ] },
 
 /** while (true) { break } **/
 'unlabelled break within iteration statement':

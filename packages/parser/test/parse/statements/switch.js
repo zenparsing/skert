@@ -20,7 +20,7 @@
             start: 13,
             end: 27,
             test: { type: 'NumberLiteral', start: 18, end: 19, value: 1 },
-            consequent:
+            statements:
              [ { type: 'VariableDeclaration',
                  start: 21,
                  end: 27,

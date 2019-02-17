@@ -530,9 +530,9 @@ export class Printer {
   SwitchCase(node) {
     if (node.test) { this.write('case ', node.test, ':') }
     else { this.write('default:') }
-    if (node.consequent.length > 0) {
+    if (node.statements.length > 0) {
       this.write(INDENT);
-      this.writeStatements(node.consequent);
+      this.writeStatements(node.statements);
       this.depth--;
     }
   }
