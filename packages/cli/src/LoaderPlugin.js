@@ -9,9 +9,6 @@ const errorPrepareStackTrace = Error.prepareStackTrace;
 export function registerLoader(options) {
   Error.prepareStackTrace = prepareStackTraceOverride;
   Module.prototype._compile = createCompileOverride(options);
-  if (process.addModuleLoaderPlugin) {
-    process.addModuleLoaderPlugin(createLoaderPlugin(options));
-  }
 }
 
 function createRequire(location) {
@@ -19,28 +16,6 @@ function createRequire(location) {
   module.filename = location;
   module.paths = Module._nodeModulePaths(path.dirname(location));
   return module.require.bind(module);
-}
-
-function createLoaderPlugin(options = {}) {
-  return {
-    translate(source, url) {
-      if (shouldTranslate(url)) {
-        let result = compile(source, {
-          location: url,
-          module: true,
-          transformModules: false,
-          validate: options.validate,
-          // TODO: this is wrong
-          // loadModule: createRequire(filename),
-        });
-        source = result.output;
-        if (result.mappings) {
-          translationMappings.set(url, result.mappings);
-        }
-        return source;
-      }
-    }
-  };
 }
 
 function createCompileOverride(options = {}) {
